@@ -17,22 +17,15 @@ public class UserDetailsServiceImpl  implements UserDetailsService{
 	@Autowired
 	private AppUserRepository repository;
 	
-	@Override
-	public UserDetails loadUserByUsername(String username)  throws
-	UsernameNotFoundException {
-		Optional<AppUser> user = repository.findByUsername(username);
-		
-		UserBuilder builder = null;
-		if(user.isPresent()) {
-			AppUser currentUser = user.get();
-			builder = org.springframework.security.core.userdetails.
-					User.withUsername(username);
-			builder.password(currentUser.getPassword());
-			builder.roles(currentUser.getRole());
-		}	else {
-			throw new UsernameNotFoundException("User not found.");
-		}
-		
-		return builder.build();
-	}
+	 @Override
+	    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+	        AppUser user = repository.findByUsername(username)
+	                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+
+	        return org.springframework.security.core.userdetails.User
+	                .withUsername(user.getUsername())
+	                .password(user.getPassword())
+	                .roles(user.getRole().name()) // <-- Enum → String ("ADMIN", ecc.)
+	                .build();
+	    }
 }

@@ -1,7 +1,11 @@
 package com.florin.franco.UniHub_sistemiWeb.entity;
 
+import com.florin.franco.UniHub_sistemiWeb.utils.Ruolo;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,6 +31,10 @@ public class AppUser {
 	@Column(nullable=false)
 	private String password;
 	
-	@Column(nullable=false)
-	private String role;
+	@Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Ruolo role;
+	
+	@Column(nullable = false, unique = true)
+    private String email;
 }

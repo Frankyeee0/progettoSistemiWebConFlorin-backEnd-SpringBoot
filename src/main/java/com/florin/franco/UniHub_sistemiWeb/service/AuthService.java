@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.florin.franco.UniHub_sistemiWeb.entity.AppUser;
 import com.florin.franco.UniHub_sistemiWeb.repository.AppUserRepository;
+import com.florin.franco.UniHub_sistemiWeb.utils.Ruolo;
 
 @Service
 public class AuthService {
@@ -16,12 +17,16 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
     
-    public AppUser registerUser(String username, String rawPassword, String role) {
+    public AppUser registerUser(String username, String rawPassword, Ruolo  role, String email) {
         if (userRepository.findByUsername(username).isPresent()) {
-            throw new RuntimeException("Username già esistente");
+            throw new RuntimeException("❌ Username già esistente");
         }
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new RuntimeException("❌ Email già registrata");
+        }
+
         String encoded = passwordEncoder.encode(rawPassword);
-        return userRepository.save(new AppUser(null, username, encoded, role));
+        return userRepository.save(new AppUser(null, username, encoded, role, email));
     }
 
     public AppUser findByUsername(String username) {

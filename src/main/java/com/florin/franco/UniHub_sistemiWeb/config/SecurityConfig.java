@@ -31,22 +31,31 @@ public class SecurityConfig {
      * - Richiede autenticazione per tutto il resto
      * - Usa il form di login standard (Spring)
      */
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-	    return http
-	            .csrf(csrf -> csrf.disable())
-	            .authorizeHttpRequests(auth -> auth
-	                    .requestMatchers("/", "/api/auth/**").permitAll()  // ✅ /register e /login liberi
-	                    .anyRequest().authenticated()                      // il resto richiede login
-	            )
-	            .formLogin(form -> form.disable())   // ❌ disabilita login HTML predefinito
-	            .httpBasic(basic -> basic.disable()) // ❌ disabilita Basic Auth
-	            .build();
-	}
-    /**
-     * PasswordEncoder: serve per confrontare e cifrare le password in modo sicuro.
-     * Usa BCrypt (standard consigliato).
-     */
+	  @Bean
+	    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	        return http
+	                // Disattiva CSRF per permettere le POST da HTML/fetch
+	                .csrf(csrf -> csrf.disable())
+
+	                // Gestione permessi sugli endpoint
+	                .authorizeHttpRequests(auth -> auth
+	                        // Permetti accesso libero a tutto ciò che riguarda autenticazione
+	                        .requestMatchers("/api/auth/**").permitAll()
+	                        // Permetti anche le risorse statiche (HTML, JS, CSS)
+	                        .requestMatchers("/", "/index.html", "/login.html", "/register.html", "/js/**", "/css/**").permitAll()
+	                        // Tutto il resto richiede autenticazione
+	                        .anyRequest().authenticated()
+	                )
+
+	                // Attiva form login di Spring (non lo userai, ma serve per fallback)
+	                .formLogin(form -> form.permitAll())
+
+	                // Attiva logout
+	                .logout(logout -> logout.permitAll())
+
+	                .build();
+	    }
+	  
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

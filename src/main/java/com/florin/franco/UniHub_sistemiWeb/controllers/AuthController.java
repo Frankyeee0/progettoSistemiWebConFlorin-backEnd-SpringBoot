@@ -19,24 +19,29 @@ public class AuthController  {
 	 	@Autowired
 	    private AuthService authService;
 
-	    @PostMapping("/register")
-	    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-	        try {
-	            AppUser user = authService.registerUser(
-	                    request.getUsername(),
-	                    request.getPassword(),
-	                    request.getRole()
-	            );
+	 	@PostMapping("/register")
+	 	public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+	 	    try {
+	 	    	
+	 	    	AppUser user = authService.registerUser(
+	 	    		    request.getUsername(),
+	 	    		    request.getPassword(),
+	 	    		    request.getRole(),
+	 	    		    request.getEmail()
+	 	    		);
 
-	            return ResponseEntity
-	                    .status(HttpStatus.CREATED)
-	                    .body("✅ Utente registrato con successo: " + user.getUsername());
-	        } catch (RuntimeException e) {
-	            return ResponseEntity
-	                    .status(HttpStatus.BAD_REQUEST)
-	                    .body(e.getMessage());
-	        }
-	    }
+
+	 	        return ResponseEntity
+	 	                .status(HttpStatus.CREATED)
+	 	                .body("✅ Utente registrato: " + user.getUsername() + " (" + user.getRole() + ")");
+	 	    } catch (RuntimeException e) {
+	 	        return ResponseEntity
+	 	                .status(HttpStatus.BAD_REQUEST)
+	 	                .body(e.getMessage());
+	 	    }
+	 	}
+
+
 	    
 	    @PostMapping("/login")
 	    public ResponseEntity<?> login(@RequestBody RegisterRequest request) {
