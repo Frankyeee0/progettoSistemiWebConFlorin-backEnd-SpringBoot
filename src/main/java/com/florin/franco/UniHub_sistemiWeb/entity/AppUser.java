@@ -37,4 +37,7 @@ public class AppUser {
 	
 	@Column(nullable = false, unique = true)
     private String email;
+	
+	@Column(name = "immagine_profilo_url")
+	private String immagineProfiloUrl;
 }
