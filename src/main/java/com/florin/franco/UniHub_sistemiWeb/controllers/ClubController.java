@@ -2,27 +2,25 @@ package com.florin.franco.UniHub_sistemiWeb.controllers;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.florin.franco.UniHub_sistemiWeb.api.dto.ClubDettaglioDTO;
+import com.florin.franco.UniHub_sistemiWeb.api.projection.ClubSummary;
 import com.florin.franco.UniHub_sistemiWeb.entity.Club;
+import com.florin.franco.UniHub_sistemiWeb.repository.ClubRepository;
 import com.florin.franco.UniHub_sistemiWeb.service.ClubService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/club")
+@RequiredArgsConstructor
 public class ClubController {
 
-    @Autowired
-    private ClubService clubService;
+    private final ClubService clubService;
+    private final ClubRepository repo;
 
-    // ✅ Creazione club (solo Admin o SuperAdmin)
+    // ✅ Creazione club
     @PostMapping("/crea/{fondatoreId}")
     public ResponseEntity<?> creaClub(@RequestBody Club club, @PathVariable Long fondatoreId) {
         try {
@@ -32,23 +30,17 @@ public class ClubController {
         }
     }
 
-    // ✅ Lista club
+    // ✅ Lista “leggera”: id, nome, descrizione (projection)
     @GetMapping
-    public List<Club> getClub() {
-        return clubService.getTuttiClub();
+    public ResponseEntity<List<ClubSummary>> list() {
+        return ResponseEntity.ok(repo.findAllProjectedBy());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getClub(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(clubService.getClubDettaglio(id));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body("❌ " + e.getMessage());
-        }
+    public ResponseEntity<ClubDettaglioDTO> getClub(@PathVariable Long id) {
+        return ResponseEntity.ok(clubService.getClubDettaglio(id));
     }
 
-
-    // ✅ Iscrizione utente
     @PostMapping("/{clubId}/iscrivi/{utenteId}")
     public ResponseEntity<?> iscriviUtente(@PathVariable Long clubId, @PathVariable Long utenteId) {
         try {
@@ -58,7 +50,6 @@ public class ClubController {
         }
     }
 
-    // ✅ Disiscrizione utente
     @PostMapping("/{clubId}/disiscrivi/{utenteId}")
     public ResponseEntity<?> disiscriviUtente(@PathVariable Long clubId, @PathVariable Long utenteId) {
         try {

@@ -2,6 +2,7 @@ package com.florin.franco.UniHub_sistemiWeb.service;
 
 import java.util.List;
 
+import com.florin.franco.UniHub_sistemiWeb.api.dto.ClubDettaglioDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -67,13 +68,25 @@ public class ClubService {
         club.getMembri().remove(utente);
         return clubRepository.save(club);
     }
-    
-    public Club getClubDettaglio(Long id) {
+
+    public ClubDettaglioDTO getClubDettaglio(Long id) {
         Club club = clubRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Club non trovato"));
-        club.getCommenti().size();
-        club.getFeedbacks().size();
-        return club;
+
+        String fondatoreUsername = club.getFondatore() != null
+                ? club.getFondatore().getUsername()
+                : null;
+
+        return new ClubDettaglioDTO(
+                club.getId(),
+                club.getNome(),
+                club.getDescrizione(),
+                club.getMaxMembri(),
+                club.getPostiDisponibili(),
+                club.getDataCreazione(),
+                fondatoreUsername
+        );
     }
+
 
 }
