@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoDto;
 import com.florin.franco.UniHub_sistemiWeb.entity.Evento;
 import com.florin.franco.UniHub_sistemiWeb.service.EventoService;
 
@@ -22,22 +23,22 @@ public class EventoController {
         try {
             return ResponseEntity.ok(eventoService.creaEvento(evento, creatoreId));
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body("❌ " + e.getMessage());
+            return ResponseEntity.badRequest().body("Attenzione " +e.getMessage());
         }
     }
 
     // ✅ Lista eventi
     @GetMapping
-    public List<Evento> getEventi() {
-        return eventoService.getTuttiEventi();
+    public List<EventoDto> getAllEvents() {
+        return eventoService.getAllEvents();
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<?> getEvento(@PathVariable Long id) {
+    public ResponseEntity<?> getEvent(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(eventoService.getEventoDettaglio(id));
+            return ResponseEntity.ok(eventoService.getEventDetails(id));
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body("❌ " + e.getMessage());
+            return ResponseEntity.badRequest().body("Attenzione " + e.getMessage());
         }
     }
 
@@ -47,7 +48,7 @@ public class EventoController {
         try {
             return ResponseEntity.ok(eventoService.iscriviStudente(eventoId, studenteId));
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body("❌ " + e.getMessage());
+            return ResponseEntity.badRequest().body( e.getMessage());
         }
     }
 
@@ -57,7 +58,7 @@ public class EventoController {
         try {
             return ResponseEntity.ok(eventoService.disiscriviStudente(eventoId, studenteId));
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body("❌ " + e.getMessage());
+            return ResponseEntity.badRequest().body( e.getMessage());
         }
     }
 }

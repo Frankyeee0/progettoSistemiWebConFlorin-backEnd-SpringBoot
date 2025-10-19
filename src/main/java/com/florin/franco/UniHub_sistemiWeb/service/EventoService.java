@@ -1,11 +1,15 @@
 package com.florin.franco.UniHub_sistemiWeb.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoDto;
+import com.florin.franco.UniHub_sistemiWeb.api.dto.UserLiteDTO;
 import com.florin.franco.UniHub_sistemiWeb.entity.AppUser;
 import com.florin.franco.UniHub_sistemiWeb.entity.Evento;
 import com.florin.franco.UniHub_sistemiWeb.repository.AppUserRepository;
@@ -20,8 +24,10 @@ public class EventoService {
 
     @Autowired
     private AppUserRepository userRepository;
-
-    // 🔹 Creazione evento (solo Admin/SuperAdmin)
+    
+    @Autowired
+    ModelMapper modelMapper;
+   
     public Evento creaEvento(Evento evento, Long creatoreId) {
         AppUser creatore = userRepository.findById(creatoreId)
                 .orElseThrow(() -> new RuntimeException("Creatore non trovato"));
@@ -35,36 +41,62 @@ public class EventoService {
     }
 
     // 🔹 Lista di tutti gli eventi
-    public List<Evento> getTuttiEventi() {
-        return eventoRepository.findAll();
+    public List<EventoDto> getAllEvents() {
+    	List<Evento> listEventsEntity= eventoRepository.findAll();
+    	List<EventoDto> listEventsDto = new ArrayList<EventoDto>();
+    	
+    	listEventsEntity.forEach(elem ->{
+    		listEventsDto.add(modelMapper.map(elem,EventoDto.class));
+    	});
+        return listEventsDto;
     }
 
-    // 🔹 Iscrizione studente con controlli
-    public Evento iscriviStudente(Long eventoId, Long studenteId) {
+    public EventoDto iscriviStudente(Long eventoId, Long studenteId) {
         Evento evento = eventoRepository.findById(eventoId)
                 .orElseThrow(() -> new RuntimeException("Evento non trovato"));
         AppUser studente = userRepository.findById(studenteId)
                 .orElseThrow(() -> new RuntimeException("Studente non trovato"));
 
+        // 🔹 Solo studenti possono iscriversi
         if (studente.getRole() != Ruolo.STUDENT) {
             throw new RuntimeException("Solo gli studenti possono iscriversi agli eventi!");
         }
 
+        // 🔹 Controlla deadline
         if (evento.getDeadlineIscrizione() != null &&
             LocalDateTime.now().isAfter(evento.getDeadlineIscrizione())) {
             throw new RuntimeException("Le iscrizioni sono chiuse per questo evento!");
         }
 
+        // 🔹 Controlla posti
         if (evento.getPostiDisponibili() <= 0) {
             throw new RuntimeException("Posti esauriti!");
         }
 
+        // 🔹 Evita doppie iscrizioni
         if (evento.getIscritti().contains(studente)) {
             throw new RuntimeException("Studente già iscritto!");
         }
 
+        // 🔹 Aggiunge lo studente e salva
         evento.getIscritti().add(studente);
-        return eventoRepository.save(evento);
+        Evento eventoAggiornato = eventoRepository.save(evento);
+
+        // 🔹 Converte in DTO
+        EventoDto dto = modelMapper.map(eventoAggiornato, EventoDto.class);
+
+        // Eviti che ModelMapper cerchi di convertire automaticamente gli iscritti (per i record)
+        modelMapper.typeMap(Evento.class, EventoDto.class)
+                .addMappings(m -> m.skip(EventoDto::setIscritti));
+
+        // 🔹 Mappa manualmente gli iscritti
+        List<UserLiteDTO> iscrittiDto = eventoAggiornato.getIscritti().stream()
+                .map(u -> new UserLiteDTO(u.getId(), u.getUsername()))
+                .toList();
+
+        dto.setIscritti(iscrittiDto);
+
+        return dto;
     }
 
     // 🔹 Disiscrizione studente
@@ -78,13 +110,13 @@ public class EventoService {
         return eventoRepository.save(evento);
     }
     
-    public Evento getEventoDettaglio(Long id) {
-        Evento evento = eventoRepository.findById(id)
+    public EventoDto getEventDetails(Long id) {
+    	
+        Evento event = eventoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Evento non trovato"));
-        // Hibernate fetch farà già il join con commenti e feedback
-        evento.getCommenti().size(); // forza inizializzazione
-        evento.getFeedbacks().size();
-        return evento;
+        EventoDto eventdtoDto= modelMapper.map(event,EventoDto.class);
+
+        return eventdtoDto;
     }
 
 }
