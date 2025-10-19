@@ -3,11 +3,12 @@ package com.florin.franco.UniHub_sistemiWeb.controllers;
 
 import java.util.List;
 
+import com.florin.franco.UniHub_sistemiWeb.api.dto.UniversitaDTO;
+import com.florin.franco.UniHub_sistemiWeb.api.mapper.UniversitaMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.florin.franco.UniHub_sistemiWeb.dto.Universita;
 import com.florin.franco.UniHub_sistemiWeb.repository.UniversitaRepository;
 
 
@@ -20,8 +21,9 @@ public class UniversitaController {
 
     // ✅ 1. Ottieni tutte le università
     @GetMapping
-    public ResponseEntity<List<Universita>> getAllUniversita() {
-        List<Universita> universitaList = universitaRepository.findAll();
-        return ResponseEntity.ok(universitaList);
+    public ResponseEntity<List<UniversitaDTO>> getAllUniversita() {
+        var list = universitaRepository.findAll();
+        var dto  = list.stream().map(UniversitaMapper::toDto).toList();
+        return ResponseEntity.ok(dto);
     }
 }
