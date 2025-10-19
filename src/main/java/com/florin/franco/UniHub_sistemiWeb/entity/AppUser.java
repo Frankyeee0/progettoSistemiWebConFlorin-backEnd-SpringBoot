@@ -3,10 +3,10 @@ package com.florin.franco.UniHub_sistemiWeb.entity;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.florin.franco.UniHub_sistemiWeb.dto.Dipartimento;
-import com.florin.franco.UniHub_sistemiWeb.dto.Universita;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.florin.franco.UniHub_sistemiWeb.utils.Ruolo;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -19,6 +19,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -78,6 +79,10 @@ public class AppUser {
             inverseJoinColumns = @JoinColumn(name = "seguito_id")
     )
     private Set<AppUser> seguiti = new HashSet<>();
+    
+    @OneToMany(mappedBy = "creatore", cascade = CascadeType.ALL)
+    @JsonManagedReference("evento-creatore")
+    private Set<Evento> eventiCreati = new HashSet<>();
 
     // ✅ Evita loop infiniti con Hibernate e Lombok
     @Override

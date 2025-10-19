@@ -9,6 +9,8 @@ import com.florin.franco.UniHub_sistemiWeb.repository.ClubRepository;
 import com.florin.franco.UniHub_sistemiWeb.service.ClubService;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,9 +18,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/club")
 @RequiredArgsConstructor
 public class ClubController {
-
-    private final ClubService clubService;
-    private final ClubRepository repo;
+	
+	@Autowired
+    private ClubService clubService;
+	@Autowired
+    private ClubRepository repo;
 
     // ✅ Creazione club
     @PostMapping("/crea/{fondatoreId}")

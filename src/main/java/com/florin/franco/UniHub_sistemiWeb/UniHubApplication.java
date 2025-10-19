@@ -12,14 +12,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.florin.franco.UniHub_sistemiWeb.dto.Dipartimento;
-import com.florin.franco.UniHub_sistemiWeb.dto.Universita;
 import com.florin.franco.UniHub_sistemiWeb.entity.AppUser;
 import com.florin.franco.UniHub_sistemiWeb.entity.Club;
 import com.florin.franco.UniHub_sistemiWeb.entity.Commento;
+import com.florin.franco.UniHub_sistemiWeb.entity.Dipartimento;
 import com.florin.franco.UniHub_sistemiWeb.entity.Evento;
 import com.florin.franco.UniHub_sistemiWeb.entity.Feedback;
 import com.florin.franco.UniHub_sistemiWeb.entity.FeedbackRepository;
+import com.florin.franco.UniHub_sistemiWeb.entity.Universita;
 import com.florin.franco.UniHub_sistemiWeb.repository.AppUserRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.ClubRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.CommentoRepository;

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.florin.franco.UniHub_sistemiWeb.dto.Dipartimento;
+import com.florin.franco.UniHub_sistemiWeb.entity.Dipartimento;
 import com.florin.franco.UniHub_sistemiWeb.repository.DipartimentoRepository;
 
 @RestController

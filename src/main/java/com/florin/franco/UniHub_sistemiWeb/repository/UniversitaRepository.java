@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.florin.franco.UniHub_sistemiWeb.dto.Universita;
+import com.florin.franco.UniHub_sistemiWeb.entity.Universita;
 
 @Repository
 public interface UniversitaRepository extends JpaRepository<Universita, Long> {

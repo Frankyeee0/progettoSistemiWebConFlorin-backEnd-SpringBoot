@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: "Segoe UI", Roboto, Arial, sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            padding: 30px;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #0078D7;
+            padding-bottom: 15px;
+        }
+
+        .header h1 {
+            color: #0078D7;
+            font-size: 26px;
+            margin: 0;
+        }
+
+        .content {
+            margin-top: 20px;
+            color: #333;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: #0078D7;
+            color: #ffffff !important;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            margin-top: 30px;
+        }
+
+        .logo {
+            width: 60px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" alt="UniHub Logo">
+            <h1>Benvenuto su UniHub 🎓</h1>
+        </div>
+        <div class="content">
+            <p>Ciao <b>{{nomeUtente}}</b>,</p>
+
+            <p>Grazie per esserti registrato su <b>UniHub</b>! 🎉</p>
+            <p>Da oggi puoi accedere alla piattaforma per gestire i tuoi corsi, prenotare lezioni e connetterti con altri studenti.</p>
+
+            <p>Per iniziare subito, clicca sul pulsante qui sotto:</p>
+
+            <a href="{{linkLogin}}" class="button">Accedi al tuo account</a>
+
+            <p>Se non hai creato tu questo account, ignora questa email.</p>
+
+            <p>A presto,<br><b>Il Team di UniHub</b></p>
+        </div>
+
+        <div class="footer">
+            © 2025 UniHub – Tutti i diritti riservati<br>
+            <a href="#" style="color:#999;text-decoration:none;">www.unihub.it</a>
+        </div>
+    </div>
+</body>
+</html>

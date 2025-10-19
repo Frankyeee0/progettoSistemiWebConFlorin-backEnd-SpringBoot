@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.florin.franco.UniHub_sistemiWeb.dto.Dipartimento;
 import com.florin.franco.UniHub_sistemiWeb.dto.RegisterRequest;
-import com.florin.franco.UniHub_sistemiWeb.dto.Universita;
 import com.florin.franco.UniHub_sistemiWeb.entity.AppUser;
+import com.florin.franco.UniHub_sistemiWeb.entity.Dipartimento;
+import com.florin.franco.UniHub_sistemiWeb.entity.Universita;
 import com.florin.franco.UniHub_sistemiWeb.repository.AppUserRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.DipartimentoRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.UniversitaRepository;

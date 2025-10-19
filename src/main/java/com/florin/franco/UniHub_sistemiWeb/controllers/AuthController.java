@@ -11,16 +11,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.florin.franco.UniHub_sistemiWeb.dto.Dipartimento;
 import com.florin.franco.UniHub_sistemiWeb.dto.LoginRequest;
 import com.florin.franco.UniHub_sistemiWeb.dto.LoginResponse;
 import com.florin.franco.UniHub_sistemiWeb.dto.RegisterRequest;
-import com.florin.franco.UniHub_sistemiWeb.dto.Universita;
 import com.florin.franco.UniHub_sistemiWeb.entity.AppUser;
+import com.florin.franco.UniHub_sistemiWeb.entity.Dipartimento;
+import com.florin.franco.UniHub_sistemiWeb.entity.Universita;
 import com.florin.franco.UniHub_sistemiWeb.repository.AppUserRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.DipartimentoRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.UniversitaRepository;
 import com.florin.franco.UniHub_sistemiWeb.service.AuthService;
+import com.florin.franco.UniHub_sistemiWeb.service.EmailService;
 import com.florin.franco.UniHub_sistemiWeb.utils.Ruolo;
 
 @RestController
@@ -38,11 +39,15 @@ public class AuthController {
     
     @Autowired
     private AuthService authService;
+    
+    @Autowired
+    private EmailService emailService;
     // 🔹 Endpoint di registrazione
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
             AppUser user = authService.registerUser(request);
+            emailService.sendWelcomeEmail(user.getEmail(), user.getUsername());
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body("✅ Utente registrato con successo: " + user.getUsername());
         } catch (RuntimeException e) {

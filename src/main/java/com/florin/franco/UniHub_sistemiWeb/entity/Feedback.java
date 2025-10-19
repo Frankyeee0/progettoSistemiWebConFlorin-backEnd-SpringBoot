@@ -9,6 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,8 +37,10 @@ public class Feedback {
     private AppUser autore;
 
     @ManyToOne
-    @JsonBackReference
+    @JoinColumn(name = "evento_id")
+    @JsonBackReference("evento-feedbacks")
     private Evento evento;
+;
 
     @ManyToOne
     @JsonBackReference

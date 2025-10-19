@@ -1,8 +1,6 @@
-package com.florin.franco.UniHub_sistemiWeb.dto;
+package com.florin.franco.UniHub_sistemiWeb.entity;
 
 import java.util.List;
-
-import com.florin.franco.UniHub_sistemiWeb.entity.AppUser;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -29,7 +27,7 @@ public class Dipartimento {
 	    @GeneratedValue(strategy = GenerationType.AUTO)
 	    private Long id;
 
-	    @Column(nullable = false, unique = true)
+	    @Column(nullable = false, unique = false)
 	    private String nome;
 	    
 	 // ✅ Molti dipartimenti → 1 università

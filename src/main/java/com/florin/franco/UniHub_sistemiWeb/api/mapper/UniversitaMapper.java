@@ -1,8 +1,9 @@
 package com.florin.franco.UniHub_sistemiWeb.api.mapper;
 
 import com.florin.franco.UniHub_sistemiWeb.api.dto.*;
-import com.florin.franco.UniHub_sistemiWeb.dto.Universita;
-import com.florin.franco.UniHub_sistemiWeb.dto.Dipartimento;
+import com.florin.franco.UniHub_sistemiWeb.entity.Dipartimento;
+import com.florin.franco.UniHub_sistemiWeb.entity.Universita;
+
 import java.util.List;
 
 public final class UniversitaMapper {

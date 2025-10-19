@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
@@ -24,6 +26,7 @@ public class Evento {
     private String titolo;
 
     private String descrizione;
+    
     private LocalDateTime dataInizio;
     private LocalDateTime dataFine;
     private String luogo;
@@ -31,6 +34,7 @@ public class Evento {
     private LocalDateTime deadlineIscrizione;
 
     @ManyToOne
+    @JsonBackReference("evento-creatore")
     private AppUser creatore;
 
     @ManyToMany
@@ -42,11 +46,11 @@ public class Evento {
     private Set<AppUser> iscritti = new HashSet<>();
 
     @OneToMany(mappedBy = "evento", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference("evento-commenti")
     private Set<Commento> commenti = new HashSet<>();
 
     @OneToMany(mappedBy = "evento", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference("evento-feedbacks")
     private Set<Feedback> feedbacks = new HashSet<>();
 
     @Transient

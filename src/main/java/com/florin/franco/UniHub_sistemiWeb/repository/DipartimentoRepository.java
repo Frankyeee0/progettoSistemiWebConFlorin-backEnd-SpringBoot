@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.florin.franco.UniHub_sistemiWeb.dto.Dipartimento;
+import com.florin.franco.UniHub_sistemiWeb.entity.Dipartimento;
 
 @Repository
 public interface DipartimentoRepository extends JpaRepository<Dipartimento, Long> {

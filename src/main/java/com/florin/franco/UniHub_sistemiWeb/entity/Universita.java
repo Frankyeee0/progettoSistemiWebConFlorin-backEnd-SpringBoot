@@ -1,8 +1,6 @@
-package com.florin.franco.UniHub_sistemiWeb.dto;
+package com.florin.franco.UniHub_sistemiWeb.entity;
 
 import java.util.List;
-
-import com.florin.franco.UniHub_sistemiWeb.entity.AppUser;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
