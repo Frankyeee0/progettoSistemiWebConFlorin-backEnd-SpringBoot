@@ -1,4 +1,5 @@
-package com.florin.franco.UniHub_sistemiWeb.api.dto;
+package com.florin.franco.UniHub_sistemiWeb.dto;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,7 +26,7 @@ public class EventoDto {
 	    private Long creatoreId;
 	    private String creatoreUsername;
 
-	    private List<UserLiteDTO> iscritti;
+	    private List<UserLiteDto> iscritti;
 	    private Set<Long> commentiIds;
 	    private Set<Long> feedbackIds;
 }

@@ -1,6 +1,7 @@
 package com.florin.franco.UniHub_sistemiWeb.repository;
 
-import com.florin.franco.UniHub_sistemiWeb.api.projection.ClubSummary;
+import com.florin.franco.UniHub_sistemiWeb.dto.ClubDto;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,6 +12,6 @@ import java.util.Optional;
 
 @Repository
 public interface ClubRepository extends JpaRepository<Club, Long> {
-    List<ClubSummary> findAllProjectedBy();
-    Optional<ClubSummary> findProjectedById(Long id);
+    List<ClubDto> findAllProjectedBy();
+    Optional<ClubDto> findProjectedById(Long id);
 }

@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoDto;
+import com.florin.franco.UniHub_sistemiWeb.dto.EventoDto;
 import com.florin.franco.UniHub_sistemiWeb.entity.Evento;
 import com.florin.franco.UniHub_sistemiWeb.service.EventoService;
 
@@ -17,7 +17,6 @@ public class EventoController {
     @Autowired
     private EventoService eventoService;
 
-    // ✅ Creazione evento (solo Admin o SuperAdmin)
     @PostMapping("/crea/{creatoreId}")
     public ResponseEntity<?> creaEvento(@RequestBody Evento evento, @PathVariable Long creatoreId) {
         try {
@@ -27,7 +26,6 @@ public class EventoController {
         }
     }
 
-    // ✅ Lista eventi
     @GetMapping
     public List<EventoDto> getAllEvents() {
         return eventoService.getAllEvents();
@@ -42,7 +40,6 @@ public class EventoController {
         }
     }
 
-    // ✅ Iscrizione studente
     @PostMapping("/{eventoId}/iscrivi/{studenteId}")
     public ResponseEntity<?> iscriviStudente(@PathVariable Long eventoId, @PathVariable Long studenteId) {
         try {
@@ -52,7 +49,6 @@ public class EventoController {
         }
     }
 
-    // ✅ Disiscrizione studente
     @PostMapping("/{eventoId}/disiscrivi/{studenteId}")
     public ResponseEntity<?> disiscriviStudente(@PathVariable Long eventoId, @PathVariable Long studenteId) {
         try {

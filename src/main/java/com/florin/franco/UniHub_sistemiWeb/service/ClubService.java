@@ -1,11 +1,15 @@
 package com.florin.franco.UniHub_sistemiWeb.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.florin.franco.UniHub_sistemiWeb.api.dto.ClubDettaglioDTO;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.florin.franco.UniHub_sistemiWeb.dto.ClubDettaglioDto;
+import com.florin.franco.UniHub_sistemiWeb.dto.ClubDto;
+import com.florin.franco.UniHub_sistemiWeb.dto.UserLiteDto;
 import com.florin.franco.UniHub_sistemiWeb.entity.AppUser;
 import com.florin.franco.UniHub_sistemiWeb.entity.Club;
 import com.florin.franco.UniHub_sistemiWeb.repository.AppUserRepository;
@@ -15,78 +19,95 @@ import com.florin.franco.UniHub_sistemiWeb.utils.Ruolo;
 @Service
 public class ClubService {
 
-    @Autowired
-    private ClubRepository clubRepository;
+	 @Autowired
+	    private ClubRepository clubRepository;
 
-    @Autowired
-    private AppUserRepository userRepository;
+	    @Autowired
+	    private AppUserRepository userRepository;
 
-    // 🔹 Creazione club (solo Admin/SuperAdmin)
-    public Club creaClub(Club club, Long fondatoreId) {
-        AppUser fondatore = userRepository.findById(fondatoreId)
-                .orElseThrow(() -> new RuntimeException("Fondatore non trovato"));
+	    @Autowired
+	    private ModelMapper modelMapper;
 
-        if (fondatore.getRole() != Ruolo.ADMIN && fondatore.getRole() != Ruolo.SUPERADMIN) {
-            throw new RuntimeException("Solo gli admin possono creare club!");
-        }
+	    // 🔹 Creazione Club
+	    public Club creaClub(Club club, Long fondatoreId) {
+	        AppUser fondatore = userRepository.findById(fondatoreId)
+	                .orElseThrow(() -> new RuntimeException("Fondatore non trovato"));
 
-        club.setFondatore(fondatore);
-        return clubRepository.save(club);
-    }
+	        if (fondatore.getRole() != Ruolo.ADMIN && fondatore.getRole() != Ruolo.SUPERADMIN) {
+	            throw new RuntimeException("Solo gli admin possono creare club!");
+	        }
 
-    // 🔹 Lista di tutti i club
-    public List<Club> getTuttiClub() {
-        return clubRepository.findAll();
-    }
+	        club.setFondatore(fondatore);
+	        return clubRepository.save(club);
+	    }
 
-    // 🔹 Iscrizione utente
-    public Club iscriviUtente(Long clubId, Long utenteId) {
-        Club club = clubRepository.findById(clubId)
-                .orElseThrow(() -> new RuntimeException("Club non trovato"));
-        AppUser utente = userRepository.findById(utenteId)
-                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+	    // 🔹 Lista di tutti i club
+	    public List<ClubDto> getTuttiClub() {
+	        List<Club> listaClubEntity = clubRepository.findAll();
+	        List<ClubDto> listaClubDto = new ArrayList<>();
 
-        if (club.getPostiDisponibili() <= 0) {
-            throw new RuntimeException("Club pieno!");
-        }
+	        listaClubEntity.forEach(elem -> {
+	            listaClubDto.add(modelMapper.map(elem, ClubDto.class));
+	        });
 
-        if (club.getMembri().contains(utente)) {
-            throw new RuntimeException("Utente già iscritto!");
-        }
+	        return listaClubDto;
+	    }
 
-        club.getMembri().add(utente);
-        return clubRepository.save(club);
-    }
+	    // 🔹 Iscrizione utente al club
+	    public ClubDto iscriviUtente(Long clubId, Long utenteId) {
+	        Club club = clubRepository.findById(clubId)
+	                .orElseThrow(() -> new RuntimeException("Club non trovato"));
+	        AppUser utente = userRepository.findById(utenteId)
+	                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
 
-    // 🔹 Disiscrizione
-    public Club disiscriviUtente(Long clubId, Long utenteId) {
-        Club club = clubRepository.findById(clubId)
-                .orElseThrow(() -> new RuntimeException("Club non trovato"));
-        AppUser utente = userRepository.findById(utenteId)
-                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+	        if (club.getPostiDisponibili() <= 0) {
+	            throw new RuntimeException("Club pieno!");
+	        }
 
-        club.getMembri().remove(utente);
-        return clubRepository.save(club);
-    }
+	        if (club.getMembri().contains(utente)) {
+	            throw new RuntimeException("Utente già iscritto!");
+	        }
 
-    public ClubDettaglioDTO getClubDettaglio(Long id) {
-        Club club = clubRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Club non trovato"));
+	        club.getMembri().add(utente);
+	        Club clubAggiornato = clubRepository.save(club);
 
-        String fondatoreUsername = club.getFondatore() != null
-                ? club.getFondatore().getUsername()
-                : null;
+	        // 🔹 Mappa Club aggiornato a DTO
+	        ClubDto dto = modelMapper.map(clubAggiornato, ClubDto.class);
+	        return dto;
+	    }
 
-        return new ClubDettaglioDTO(
-                club.getId(),
-                club.getNome(),
-                club.getDescrizione(),
-                club.getMaxMembri(),
-                club.getPostiDisponibili(),
-                club.getDataCreazione(),
-                fondatoreUsername
-        );
-    }
+	    // 🔹 Disiscrizione utente dal club
+	    public Club disiscriviUtente(Long clubId, Long utenteId) {
+	        Club club = clubRepository.findById(clubId)
+	                .orElseThrow(() -> new RuntimeException("Club non trovato"));
+	        AppUser utente = userRepository.findById(utenteId)
+	                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
 
+	        club.getMembri().remove(utente);
+	        return clubRepository.save(club);
+	    }
 
-}
+	    // 🔹 Dettagli di un club (con fondatore e membri)
+	    public ClubDettaglioDto getClubDettaglio(Long id) {
+	        Club club = clubRepository.findById(id)
+	                .orElseThrow(() -> new RuntimeException("Club non trovato"));
+
+	        // Configura ModelMapper per ignorare mapping automatico dei membri
+	        modelMapper.typeMap(Club.class, ClubDettaglioDto.class)
+	                .addMappings(m -> m.skip(ClubDettaglioDto::setMembri));
+
+	        ClubDettaglioDto dto = modelMapper.map(club, ClubDettaglioDto.class);
+
+	        // 🔹 Mappa manualmente i membri (come UserLiteDto)
+	        List<UserLiteDto> membriDto = club.getMembri().stream()
+	                .map(u -> new UserLiteDto(u.getId(), u.getUsername()))
+	                .toList();
+
+	        dto.setMembri(membriDto);
+
+	        // Fondatore
+	        dto.setFondatoreUsername(club.getFondatore() != null ? club.getFondatore().getUsername() : null);
+
+	        return dto;
+	    }
+	}

@@ -8,8 +8,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoDto;
-import com.florin.franco.UniHub_sistemiWeb.api.dto.UserLiteDTO;
+import com.florin.franco.UniHub_sistemiWeb.dto.EventoDto;
+import com.florin.franco.UniHub_sistemiWeb.dto.UserLiteDto;
 import com.florin.franco.UniHub_sistemiWeb.entity.AppUser;
 import com.florin.franco.UniHub_sistemiWeb.entity.Evento;
 import com.florin.franco.UniHub_sistemiWeb.repository.AppUserRepository;
@@ -40,7 +40,6 @@ public class EventoService {
         return eventoRepository.save(evento);
     }
 
-    // 🔹 Lista di tutti gli eventi
     public List<EventoDto> getAllEvents() {
     	List<Evento> listEventsEntity= eventoRepository.findAll();
     	List<EventoDto> listEventsDto = new ArrayList<EventoDto>();
@@ -57,41 +56,34 @@ public class EventoService {
         AppUser studente = userRepository.findById(studenteId)
                 .orElseThrow(() -> new RuntimeException("Studente non trovato"));
 
-        // 🔹 Solo studenti possono iscriversi
         if (studente.getRole() != Ruolo.STUDENT) {
             throw new RuntimeException("Solo gli studenti possono iscriversi agli eventi!");
         }
 
-        // 🔹 Controlla deadline
         if (evento.getDeadlineIscrizione() != null &&
             LocalDateTime.now().isAfter(evento.getDeadlineIscrizione())) {
             throw new RuntimeException("Le iscrizioni sono chiuse per questo evento!");
         }
 
-        // 🔹 Controlla posti
         if (evento.getPostiDisponibili() <= 0) {
             throw new RuntimeException("Posti esauriti!");
         }
 
-        // 🔹 Evita doppie iscrizioni
         if (evento.getIscritti().contains(studente)) {
             throw new RuntimeException("Studente già iscritto!");
         }
 
-        // 🔹 Aggiunge lo studente e salva
         evento.getIscritti().add(studente);
         Evento eventoAggiornato = eventoRepository.save(evento);
 
-        // 🔹 Converte in DTO
         EventoDto dto = modelMapper.map(eventoAggiornato, EventoDto.class);
 
-        // Eviti che ModelMapper cerchi di convertire automaticamente gli iscritti (per i record)
         modelMapper.typeMap(Evento.class, EventoDto.class)
                 .addMappings(m -> m.skip(EventoDto::setIscritti));
 
         // 🔹 Mappa manualmente gli iscritti
-        List<UserLiteDTO> iscrittiDto = eventoAggiornato.getIscritti().stream()
-                .map(u -> new UserLiteDTO(u.getId(), u.getUsername()))
+        List<UserLiteDto> iscrittiDto = eventoAggiornato.getIscritti().stream()
+                .map(u -> new UserLiteDto(u.getId(), u.getUsername()))
                 .toList();
 
         dto.setIscritti(iscrittiDto);
