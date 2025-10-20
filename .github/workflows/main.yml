@@ -36,5 +36,5 @@ jobs:
           push: true
           file: ./Dockerfile
           tags: |
-            ghcr.io/${{ github.repository_owner }}/unihub-sistemiweb:latest
-            ghcr.io/${{ github.repository_owner }}/unihub-sistemiweb:${{ github.ref_name }}
+            ghcr.io/frankyeee0/unihub-sistemiweb:latest
+            ghcr.io/frankyeee0/unihub-sistemiweb:${{ github.ref_name }}
