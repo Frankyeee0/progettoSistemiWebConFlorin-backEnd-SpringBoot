@@ -21,7 +21,7 @@ public class EventoDto {
 	    private LocalDateTime deadlineIscrizione;
 	    private int postiDisponibili;
 
-	    // Relazioni “semplificate”
+	    
 	    private Long creatoreId;
 	    private String creatoreUsername;
 
