@@ -37,8 +37,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./UniHub-sistemiWeb
-          file: ./UniHub-sistemiWeb/Dockerfile
+          context: .
+          file: ./Dockerfile
           push: true
           tags: |
             ghcr.io/frankyeee0/unihub-sistemiweb:latest
