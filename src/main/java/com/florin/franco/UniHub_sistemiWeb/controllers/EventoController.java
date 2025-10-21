@@ -2,6 +2,8 @@ package com.florin.franco.UniHub_sistemiWeb.controllers;
 
 import java.util.List;
 
+import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoDTO;
+import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoDetailDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,17 +30,13 @@ public class EventoController {
 
     // ✅ Lista eventi
     @GetMapping
-    public List<Evento> getEventi() {
-        return eventoService.getTuttiEventi();
+    public List<EventoDTO> getEventi() {
+        return eventoService.getAllEventi();
     }
-    
+
     @GetMapping("/{id}")
-    public ResponseEntity<?> getEvento(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(eventoService.getEventoDettaglio(id));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body("❌ " + e.getMessage());
-        }
+    public ResponseEntity<EventoDetailDTO> getEvento(@PathVariable Long id) {
+        return ResponseEntity.ok(eventoService.getEventoDettaglio(id));
     }
 
     // ✅ Iscrizione studente

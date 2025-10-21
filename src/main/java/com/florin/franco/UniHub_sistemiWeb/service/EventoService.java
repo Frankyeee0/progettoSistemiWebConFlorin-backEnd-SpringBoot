@@ -2,7 +2,11 @@ package com.florin.franco.UniHub_sistemiWeb.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.florin.franco.UniHub_sistemiWeb.api.dto.CreatoreDTO;
+import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoDTO;
+import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoDetailDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,8 +39,27 @@ public class EventoService {
     }
 
     // 🔹 Lista di tutti gli eventi
-    public List<Evento> getTuttiEventi() {
-        return eventoRepository.findAll();
+    public List<EventoDTO> getAllEventi() {
+        List<Evento> eventi = eventoRepository.findAll();
+
+        return eventi.stream().map(ev -> {
+            CreatoreDTO creatoreDto = null;
+            if (ev.getCreatore() != null) {
+                creatoreDto = new CreatoreDTO(
+                        ev.getCreatore().getId(),
+                        ev.getCreatore().getUsername()
+                );
+            }
+
+            return new EventoDTO(
+                    ev.getId(),
+                    ev.getTitolo(),
+                    ev.getDescrizione(),
+                    ev.getLuogo(),
+                    ev.getDataInizio(),
+                    creatoreDto
+            );
+        }).collect(Collectors.toList());
     }
 
     // 🔹 Iscrizione studente con controlli
@@ -77,14 +100,32 @@ public class EventoService {
         evento.getIscritti().remove(studente);
         return eventoRepository.save(evento);
     }
-    
-    public Evento getEventoDettaglio(Long id) {
-        Evento evento = eventoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Evento non trovato"));
-        // Hibernate fetch farà già il join con commenti e feedback
-        evento.getCommenti().size(); // forza inizializzazione
-        evento.getFeedbacks().size();
-        return evento;
+
+    public EventoDetailDTO getEventoDettaglio(Long id) {
+        Evento ev = eventoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Evento non trovato con ID " + id));
+
+        // costruiamo il DTO
+        CreatoreDTO creatoreDto = null;
+        if (ev.getCreatore() != null) {
+            creatoreDto = new CreatoreDTO(
+                    ev.getCreatore().getId(),
+                    ev.getCreatore().getUsername()
+            );
+        }
+
+        return new EventoDetailDTO(
+                ev.getId(),
+                ev.getTitolo(),
+                ev.getDescrizione(),
+                ev.getDataInizio(),
+                ev.getDataFine(),
+                ev.getLuogo(),
+                ev.getPostiTotali(),
+                ev.getPostiDisponibili(), // viene dal getter @Transient
+                ev.getDeadlineIscrizione(),
+                creatoreDto
+        );
     }
 
 }
