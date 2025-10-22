@@ -73,6 +73,7 @@ public class AuthController {
 	 	        // 🔹 Costruisci il DTO di risposta
 	 	        LoginResponse response = new LoginResponse(
 	 	            "✅ Login effettuato con successo",
+                     user.getId(),
 	 	            user.getUsername(),
 	 	            user.getRole().name()
 	 	            );

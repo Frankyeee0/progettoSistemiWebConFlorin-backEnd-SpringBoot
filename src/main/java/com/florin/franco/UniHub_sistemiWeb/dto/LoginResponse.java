@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LoginResponse {
     private String message;
+    private Long id;
     private String username;
     private String role;
 }

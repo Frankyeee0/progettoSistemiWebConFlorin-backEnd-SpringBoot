@@ -18,6 +18,7 @@ public class EventoDettaglioDTO {
     private int postiTotali;
     private int postiDisponibili;
     private LocalDateTime deadlineIscrizione;
-
     private CreatoreDTO creatore;
+    private boolean userIscritto;
 }
+

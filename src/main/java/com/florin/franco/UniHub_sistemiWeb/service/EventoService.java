@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.florin.franco.UniHub_sistemiWeb.api.dto.CreatoreDTO;
+import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoCreateDTO;
 import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoDTO;
-import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoDetailDTO;
+import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoDettaglioDTO;
+import com.florin.franco.UniHub_sistemiWeb.api.mapper.EventoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +28,7 @@ public class EventoService {
     private AppUserRepository userRepository;
 
     // 🔹 Creazione evento (solo Admin/SuperAdmin)
-    public Evento creaEvento(Evento evento, Long creatoreId) {
+    public EventoDettaglioDTO creaEvento(EventoCreateDTO dto, Long creatoreId) {
         AppUser creatore = userRepository.findById(creatoreId)
                 .orElseThrow(() -> new RuntimeException("Creatore non trovato"));
 
@@ -34,8 +36,13 @@ public class EventoService {
             throw new RuntimeException("Solo gli admin possono creare eventi!");
         }
 
+        // 🔹 Mappa DTO → Entity
+        Evento evento = EventoMapper.fromCreateDTO(dto);
         evento.setCreatore(creatore);
-        return eventoRepository.save(evento);
+
+        // 🔹 Salva e restituisci DTO di dettaglio
+        Evento salvato = eventoRepository.save(evento);
+        return EventoMapper.toDTO(salvato);
     }
 
     // 🔹 Lista di tutti gli eventi
@@ -101,31 +108,11 @@ public class EventoService {
         return eventoRepository.save(evento);
     }
 
-    public EventoDetailDTO getEventoDettaglio(Long id) {
-        Evento ev = eventoRepository.findById(id)
+    public EventoDettaglioDTO getEventoDettaglio(Long id, String username) {
+        Evento evento = eventoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Evento non trovato con ID " + id));
 
-        // costruiamo il DTO
-        CreatoreDTO creatoreDto = null;
-        if (ev.getCreatore() != null) {
-            creatoreDto = new CreatoreDTO(
-                    ev.getCreatore().getId(),
-                    ev.getCreatore().getUsername()
-            );
-        }
-
-        return new EventoDetailDTO(
-                ev.getId(),
-                ev.getTitolo(),
-                ev.getDescrizione(),
-                ev.getDataInizio(),
-                ev.getDataFine(),
-                ev.getLuogo(),
-                ev.getPostiTotali(),
-                ev.getPostiDisponibili(), // viene dal getter @Transient
-                ev.getDeadlineIscrizione(),
-                creatoreDto
-        );
+        return EventoMapper.toDTO(evento, username);
     }
 
 }
