@@ -2,6 +2,8 @@ package com.florin.franco.UniHub_sistemiWeb.controllers;
 
 import java.util.List;
 
+import com.florin.franco.UniHub_sistemiWeb.entity.AppUser;
+import com.florin.franco.UniHub_sistemiWeb.repository.AppUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,15 +14,18 @@ import com.florin.franco.UniHub_sistemiWeb.service.EventoService;
 @RestController
 @RequestMapping("/api/eventi")
 public class EventoController {
-
-    @Autowired
     private EventoService eventoService;
 
+    private AppUserRepository userRepository;
+
     // ✅ Creazione evento (solo Admin o SuperAdmin)
-    @PostMapping("/crea/{creatoreId}")
-    public ResponseEntity<?> creaEvento(@RequestBody Evento evento, @PathVariable Long creatoreId) {
+    @PostMapping("/crea")
+    public ResponseEntity<?> creaEvento(@RequestBody Evento evento, @RequestParam String username) {
         try {
-            return ResponseEntity.ok(eventoService.creaEvento(evento, creatoreId));
+            AppUser creatore = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+
+            return ResponseEntity.ok(eventoService.creaEvento(evento, creatore.getId()));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body("❌ " + e.getMessage());
         }
