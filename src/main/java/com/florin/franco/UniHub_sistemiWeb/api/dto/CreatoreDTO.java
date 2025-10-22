@@ -1,4 +1,6 @@
 package com.florin.franco.UniHub_sistemiWeb.api.dto;
+
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +11,4 @@ import lombok.NoArgsConstructor;
 public class CreatoreDTO {
     private Long id;
     private String username;
-    private String ruolo;
 }
-
