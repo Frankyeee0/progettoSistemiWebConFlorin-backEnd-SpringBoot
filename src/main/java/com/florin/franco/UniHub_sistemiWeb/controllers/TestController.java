@@ -9,11 +9,11 @@ public class TestController {
 
     @GetMapping("/")
     public String home() {
-        return "🚀 Server attivo! Benvenuto in UniHub!";
+        return "Server attivo! Benvenuto in UniHub!";
     }
 
     @GetMapping("/api/test/protetta")
     public String testProtetta() {
-        return "🔒 Accesso riuscito! Sei autenticato!";
+        return "Accesso riuscito! Sei autenticato!";
     }
 }

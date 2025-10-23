@@ -19,7 +19,6 @@ public class DipartimentoController {
     @Autowired
     private DipartimentoRepository dipartimentoRepository;
 
-    // ✅ 2. Ottieni i dipartimenti di una specifica università
     @GetMapping("/{universitaId}/dipartimenti")
     public ResponseEntity<List<Dipartimento>> getDipartimentiByUniversita(@PathVariable Long universitaId) {
         List<Dipartimento> dipartimenti = dipartimentoRepository.findByUniversitaId(universitaId);

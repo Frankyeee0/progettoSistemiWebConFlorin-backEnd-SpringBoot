@@ -30,13 +30,10 @@ public class Dipartimento {
 	    @Column(nullable = false, unique = false)
 	    private String nome;
 	    
-	 // ✅ Molti dipartimenti → 1 università
 	    @ManyToOne
 	    @JoinColumn(name = "universita_id", nullable = false)
 	    private Universita universita;
 	    
-	    // ✅ 1 dipartimento → molti studenti
-
 	    @OneToMany(mappedBy = "dipartimento", cascade = CascadeType.ALL, orphanRemoval = true)
 	    private List<AppUser> studenti;
 }

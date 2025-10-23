@@ -13,11 +13,10 @@ import com.florin.franco.UniHub_sistemiWeb.entity.AppUser;
 @Repository
 public interface AppUserRepository  extends JpaRepository
 	<AppUser, Long> {
-	 // 🔹 Ricerca completa (per login o profilo)
+	
     Optional<AppUser> findByUsername(String username);
     Optional<AppUser> findByEmail(String email);
 
-    // 🔹 Controllo rapido di esistenza (per registrazione)
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
     @Query("SELECT u.seguiti FROM AppUser u WHERE u.id = :id")

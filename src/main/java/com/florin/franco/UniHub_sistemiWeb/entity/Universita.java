@@ -26,7 +26,6 @@ public class Universita {
 	    @Column(nullable = false, unique = true)
 	    private String nome;
 
-	    // ✅ Relazione 1→N con Dipartimento
 	    @OneToMany(mappedBy = "universita", cascade = CascadeType.ALL, orphanRemoval = true)
 	    private List<Dipartimento> dipartimenti;
 }

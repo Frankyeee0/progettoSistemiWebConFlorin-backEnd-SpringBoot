@@ -23,29 +23,26 @@ public class FollowController {
     @Autowired
     private FollowService followService;
 
-    // ✅ Segui un utente
     @PostMapping("/{followerId}/segui/{seguitoId}")
-    public ResponseEntity<?> segui(@PathVariable Long followerId, @PathVariable Long seguitoId) {
+    public ResponseEntity<?> follow(@PathVariable Long followerId, @PathVariable Long seguitoId) {
         try {
             followService.segui(followerId, seguitoId);
-            return ResponseEntity.ok("✅ Ora segui l’utente con ID " + seguitoId);
+            return ResponseEntity.ok("Ora segui l’utente con ID " + seguitoId);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body("❌ " + e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    // ✅ Smetti di seguire
     @DeleteMapping("/{followerId}/unfollow/{seguitoId}")
-    public ResponseEntity<?> smetti(@PathVariable Long followerId, @PathVariable Long seguitoId) {
+    public ResponseEntity<?> unFollow(@PathVariable Long followerId, @PathVariable Long seguitoId) {
         try {
             followService.smettiDiSeguire(followerId, seguitoId);
-            return ResponseEntity.ok("👋 Hai smesso di seguire l’utente " + seguitoId);
+            return ResponseEntity.ok("Hai smesso di seguire l’utente " + seguitoId);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body("❌ " + e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    // ✅ Info follow per un utente
     @GetMapping("/{userId}/info")
     public ResponseEntity<?> getFollowInfo(@PathVariable Long userId) {
         AppUser user = userRepo.findById(userId)

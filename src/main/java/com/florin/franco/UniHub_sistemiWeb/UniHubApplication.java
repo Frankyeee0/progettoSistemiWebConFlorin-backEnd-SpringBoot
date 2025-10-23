@@ -37,7 +37,6 @@ public class UniHubApplication {
 		SpringApplication.run(UniHubApplication.class, args);
 	}
 	
-	 // ✅ Metodo di inizializzazione semplificato e transazionale
 	 @Bean
 	    @Transactional
 	    CommandLineRunner initDatabase(

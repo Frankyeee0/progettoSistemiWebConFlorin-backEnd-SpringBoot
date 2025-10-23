@@ -4,13 +4,10 @@ package com.florin.franco.UniHub_sistemiWeb.controllers;
 import java.util.List;
 
 import com.florin.franco.UniHub_sistemiWeb.dto.UniversitaDto;
-import com.florin.franco.UniHub_sistemiWeb.entity.Universita;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.florin.franco.UniHub_sistemiWeb.repository.UniversitaRepository;
 import com.florin.franco.UniHub_sistemiWeb.service.UniversitaService;
 
 

@@ -28,7 +28,6 @@ public class ClubService {
 	    @Autowired
 	    private ModelMapper modelMapper;
 
-	    // 🔹 Creazione Club
 	    public Club creaClub(Club club, Long fondatoreId) {
 	        AppUser fondatore = userRepository.findById(fondatoreId)
 	                .orElseThrow(() -> new RuntimeException("Fondatore non trovato"));
@@ -41,8 +40,8 @@ public class ClubService {
 	        return clubRepository.save(club);
 	    }
 
-	    // 🔹 Lista di tutti i club
 	    public List<ClubDto> getTuttiClub() {
+	    	
 	        List<Club> listaClubEntity = clubRepository.findAll();
 	        List<ClubDto> listaClubDto = new ArrayList<>();
 
@@ -53,7 +52,6 @@ public class ClubService {
 	        return listaClubDto;
 	    }
 
-	    // 🔹 Iscrizione utente al club
 	    public ClubDto iscriviUtente(Long clubId, Long utenteId) {
 	        Club club = clubRepository.findById(clubId)
 	                .orElseThrow(() -> new RuntimeException("Club non trovato"));
@@ -71,12 +69,10 @@ public class ClubService {
 	        club.getMembri().add(utente);
 	        Club clubAggiornato = clubRepository.save(club);
 
-	        // 🔹 Mappa Club aggiornato a DTO
 	        ClubDto dto = modelMapper.map(clubAggiornato, ClubDto.class);
 	        return dto;
 	    }
 
-	    // 🔹 Disiscrizione utente dal club
 	    public Club disiscriviUtente(Long clubId, Long utenteId) {
 	        Club club = clubRepository.findById(clubId)
 	                .orElseThrow(() -> new RuntimeException("Club non trovato"));
@@ -87,25 +83,21 @@ public class ClubService {
 	        return clubRepository.save(club);
 	    }
 
-	    // 🔹 Dettagli di un club (con fondatore e membri)
 	    public ClubDettaglioDto getClubDettaglio(Long id) {
 	        Club club = clubRepository.findById(id)
 	                .orElseThrow(() -> new RuntimeException("Club non trovato"));
 
-	        // Configura ModelMapper per ignorare mapping automatico dei membri
 	        modelMapper.typeMap(Club.class, ClubDettaglioDto.class)
 	                .addMappings(m -> m.skip(ClubDettaglioDto::setMembri));
 
 	        ClubDettaglioDto dto = modelMapper.map(club, ClubDettaglioDto.class);
 
-	        // 🔹 Mappa manualmente i membri (come UserLiteDto)
 	        List<UserLiteDto> membriDto = club.getMembri().stream()
 	                .map(u -> new UserLiteDto(u.getId(), u.getUsername()))
 	                .toList();
 
 	        dto.setMembri(membriDto);
 
-	        // Fondatore
 	        dto.setFondatoreUsername(club.getFondatore() != null ? club.getFondatore().getUsername() : null);
 
 	        return dto;

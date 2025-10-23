@@ -20,11 +20,8 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 @Entity
 @Getter
@@ -63,12 +60,10 @@ public class AppUser {
     @Column(name = "immagineProfilo")
     private byte[] immagineProfilo;
 
-    // ✅ Molti studenti → 1 dipartimento
     @ManyToOne
     @JoinColumn(name = "dipartimento_id")
     private Dipartimento dipartimento;
 
-    // 🔁 Relazione follow
     @ManyToMany(mappedBy = "seguiti")
     private Set<AppUser> follower = new HashSet<>();
 
@@ -84,7 +79,6 @@ public class AppUser {
     @JsonManagedReference("evento-creatore")
     private Set<Evento> eventiCreati = new HashSet<>();
 
-    // ✅ Evita loop infiniti con Hibernate e Lombok
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

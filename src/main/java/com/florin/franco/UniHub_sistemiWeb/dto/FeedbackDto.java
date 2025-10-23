@@ -10,13 +10,13 @@ import lombok.Data;
 public class FeedbackDto {
 
     private Long id;
-    private String testo;         // contenuto del feedback
-    private int valutazione;      // punteggio o rating (es. 1–5 stelle)
+    private String testo;         
+    private int valutazione;      
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime dataCreazione;
 
-    private Long eventoId;        // opzionale, se associato a un evento
-    private Long clubId;          // opzionale, se associato a un club
-    private UserLiteDto autore;   // utente che ha lasciato il feedback
+    private Long eventoId;        
+    private Long clubId;          
+    private UserLiteDto autore;   
 }

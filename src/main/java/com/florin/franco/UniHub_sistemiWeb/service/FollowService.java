@@ -14,7 +14,6 @@ public class FollowService {
     @Autowired
     private AppUserRepository userRepo;
 
-    // 🔹 Segui un utente
     public void segui(Long followerId, Long seguitoId) {
         if (followerId.equals(seguitoId)) throw new RuntimeException("Non puoi seguire te stesso!");
 
@@ -30,7 +29,6 @@ public class FollowService {
         userRepo.save(follower);
     }
 
-    // 🔹 Smetti di seguire
     public void smettiDiSeguire(Long followerId, Long seguitoId) {
         AppUser follower = userRepo.findById(followerId)
                 .orElseThrow(() -> new RuntimeException("Follower non trovato"));
@@ -41,7 +39,6 @@ public class FollowService {
         userRepo.save(follower);
     }
 
-    // 🔹 Lista utenti seguiti
     public Set<AppUser> getSeguiti(Long userId) {
         return userRepo.findSeguitiByUserId(userId);
     }

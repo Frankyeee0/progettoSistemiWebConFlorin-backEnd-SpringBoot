@@ -15,8 +15,8 @@ public class CommentoDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime dataCreazione;
 
-    private Long eventoId;  // riferimento all'evento (se presente)
-    private Long clubId;    // riferimento al club (se presente)
+    private Long eventoId;  
+    private Long clubId;    
 
-    private UserLiteDto autore;  // autore del commento (id, username)
+    private UserLiteDto autore;  
 }

@@ -15,14 +15,9 @@ import com.florin.franco.UniHub_sistemiWeb.dto.LoginRequest;
 import com.florin.franco.UniHub_sistemiWeb.dto.LoginResponse;
 import com.florin.franco.UniHub_sistemiWeb.dto.RegisterRequest;
 import com.florin.franco.UniHub_sistemiWeb.entity.AppUser;
-import com.florin.franco.UniHub_sistemiWeb.entity.Dipartimento;
-import com.florin.franco.UniHub_sistemiWeb.entity.Universita;
 import com.florin.franco.UniHub_sistemiWeb.repository.AppUserRepository;
-import com.florin.franco.UniHub_sistemiWeb.repository.DipartimentoRepository;
-import com.florin.franco.UniHub_sistemiWeb.repository.UniversitaRepository;
 import com.florin.franco.UniHub_sistemiWeb.service.AuthService;
 import com.florin.franco.UniHub_sistemiWeb.service.EmailService;
-import com.florin.franco.UniHub_sistemiWeb.utils.Ruolo;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -32,30 +27,23 @@ public class AuthController {
     private AppUserRepository appUserRepository;
 
     @Autowired
-    private UniversitaRepository universitaRepository;
-
-    @Autowired
-    private DipartimentoRepository dipartimentoRepository;
-    
-    @Autowired
     private AuthService authService;
     
     @Autowired
     private EmailService emailService;
-    // 🔹 Endpoint di registrazione
+    
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
             AppUser user = authService.registerUser(request);
             emailService.sendWelcomeEmail(user.getEmail(), user.getUsername());
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body("✅ Utente registrato con successo: " + user.getUsername());
+                    .body("Utente registrato con successo: " + user.getUsername());
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body("❌ Errore: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Errore: " + e.getMessage());
         }
     }
-
-	 	
+	
 	 	@GetMapping("/check-username")
 	 	public ResponseEntity<Boolean> checkUsername(@RequestParam String username) {
 	 	    boolean exists = appUserRepository.existsByUsername(username);
@@ -75,9 +63,8 @@ public class AuthController {
 	 	    try {
 	 	        AppUser user = authService.login(request.getUsername(), request.getPassword());
 
-	 	        // 🔹 Costruisci il DTO di risposta
 	 	        LoginResponse response = new LoginResponse(
-	 	            "✅ Login effettuato con successo",
+	 	            "Login effettuato con successo",
 	 	            user.getUsername(),
 	 	            user.getRole().name()
 	 	            );
@@ -87,9 +74,7 @@ public class AuthController {
 
 	 	    } catch (RuntimeException e) {
 	 	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-	 	                .body("❌ Errore durante il login: " + e.getMessage());
+	 	                .body("Errore durante il login: " + e.getMessage());
 	 	    }
 	 	}
-
-
 	}

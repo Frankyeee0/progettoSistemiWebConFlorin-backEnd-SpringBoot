@@ -12,7 +12,6 @@ import com.florin.franco.UniHub_sistemiWeb.dto.UniversitaDto;
 import com.florin.franco.UniHub_sistemiWeb.entity.Universita;
 import com.florin.franco.UniHub_sistemiWeb.repository.UniversitaRepository;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -26,17 +25,14 @@ public class UniversitaService {
 	    private ModelMapper modelMapper;
 
 	    /**
-	     * Restituisce la lista di tutte le università in formato DTO
 	     */
 	    public List<UniversitaDto> getAllUniversita() {
 	        List<Universita> entityList = universitaRepository.findAll();
 
-	        // Mappa ogni entity → DTO, includendo i Dipartimenti
 	        return entityList.stream()
 	                .map(universita -> {
 	                    UniversitaDto dto = modelMapper.map(universita, UniversitaDto.class);
 
-	                    // mappatura manuale per la lista di dipartimenti (in caso non automatica)
 	                    if (universita.getDipartimenti() != null) {
 	                        List<DipartimentoDto> deps = universita.getDipartimenti().stream()
 	                                .map(dep -> modelMapper.map(dep, DipartimentoDto.class))

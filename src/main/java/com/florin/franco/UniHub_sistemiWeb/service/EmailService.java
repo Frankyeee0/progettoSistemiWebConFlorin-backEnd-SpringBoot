@@ -13,8 +13,6 @@ import jakarta.mail.internet.MimeMessage;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 
 
@@ -28,17 +26,15 @@ public class EmailService {
 	    private String fromEmail;
 	 	
 	 	
-	 	//Mandi email semplice
 	    public void sendEmail(String to, String subject, String text) {
 	        SimpleMailMessage message = new SimpleMailMessage();
 	        message.setTo(to);
 	        message.setSubject(subject);
 	        message.setText(text);
-	        message.setFrom(fromEmail); // opzionale, ma consigliato
+	        message.setFrom(fromEmail); 
 	        mailSender.send(message);
 	    }
 	    
-	    //mandi email con un template 
 	    public void sendHtmlEmail(String to, String subject, String htmlContent) throws MessagingException {
 	        MimeMessage message = mailSender.createMimeMessage();
 	        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -54,22 +50,20 @@ public class EmailService {
 	    public void sendWelcomeEmail(String to, String nomeUtente) {
 	        try {
 	        	ClassPathResource resource = new ClassPathResource("templates/email-template.html");
-	        	// Leggi il contenuto del file
+	        	
 	            try (InputStream inputStream = resource.getInputStream()) {
 	                String html = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 
-	                // Sostituisci i placeholder
 	                html = html
 	                        .replace("{{nomeUtente}}", nomeUtente)
 	                        .replace("{{linkLogin}}", "https://unihub.it/login");
 
-	                // Invia l'email
 	                sendHtmlEmail(to, "Benvenuto su UniHub 🎓", html);
-	                System.out.println("✅ Email di benvenuto inviata a " + to);
+	                System.out.println("Email di benvenuto inviata a " + to);
 	            }
 
 	        } catch (Exception e) {
-	            System.err.println("❌ Errore durante l'invio dell'email di benvenuto: " + e.getMessage());
+	            System.err.println("Errore durante l'invio dell'email di benvenuto: " + e.getMessage());
 	        }
 	    }
 }

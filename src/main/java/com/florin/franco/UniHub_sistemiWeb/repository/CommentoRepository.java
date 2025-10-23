@@ -10,9 +10,8 @@ import com.florin.franco.UniHub_sistemiWeb.entity.Commento;
 @Repository
 public interface CommentoRepository extends JpaRepository<Commento, Long> {
 
-    // 🔹 Recupera tutti i commenti relativi a un evento
     List<Commento> findByEventoId(Long eventoId);
 
-    // 🔹 Recupera tutti i commenti relativi a un club
     List<Commento> findByClubId(Long clubId);
+    
 }

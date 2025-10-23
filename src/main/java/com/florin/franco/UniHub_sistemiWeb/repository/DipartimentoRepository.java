@@ -10,6 +10,5 @@ import com.florin.franco.UniHub_sistemiWeb.entity.Dipartimento;
 @Repository
 public interface DipartimentoRepository extends JpaRepository<Dipartimento, Long> {
 
-    // ✅ Trova tutti i dipartimenti appartenenti a una certa università
     List<Dipartimento> findByUniversitaId(Long universitaId);
 }

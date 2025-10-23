@@ -32,8 +32,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable);
         return http.build();
     }
-
-    // ✅ Config CORS: permetti il frontend Vite su 5173
+    
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cfg = new CorsConfiguration();

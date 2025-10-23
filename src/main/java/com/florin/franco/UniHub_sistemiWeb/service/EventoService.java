@@ -81,7 +81,6 @@ public class EventoService {
         modelMapper.typeMap(Evento.class, EventoDto.class)
                 .addMappings(m -> m.skip(EventoDto::setIscritti));
 
-        // 🔹 Mappa manualmente gli iscritti
         List<UserLiteDto> iscrittiDto = eventoAggiornato.getIscritti().stream()
                 .map(u -> new UserLiteDto(u.getId(), u.getUsername()))
                 .toList();
@@ -91,7 +90,6 @@ public class EventoService {
         return dto;
     }
 
-    // 🔹 Disiscrizione studente
     public Evento disiscriviStudente(Long eventoId, Long studenteId) {
         Evento evento = eventoRepository.findById(eventoId)
                 .orElseThrow(() -> new RuntimeException("Evento non trovato"));
