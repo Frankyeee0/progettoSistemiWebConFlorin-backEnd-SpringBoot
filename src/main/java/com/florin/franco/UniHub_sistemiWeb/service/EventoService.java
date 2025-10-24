@@ -3,8 +3,17 @@ package com.florin.franco.UniHub_sistemiWeb.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+<<<<<<< HEAD
 import org.modelmapper.ModelMapper;
+=======
+import com.florin.franco.UniHub_sistemiWeb.api.dto.CreatoreDTO;
+import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoCreateDTO;
+import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoDTO;
+import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoDettaglioDTO;
+import com.florin.franco.UniHub_sistemiWeb.api.mapper.EventoMapper;
+>>>>>>> release
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,11 +33,17 @@ public class EventoService {
 
     @Autowired
     private AppUserRepository userRepository;
+<<<<<<< HEAD
     
     @Autowired
     ModelMapper modelMapper;
    
     public Evento creaEvento(Evento evento, Long creatoreId) {
+=======
+
+    // 🔹 Creazione evento (solo Admin/SuperAdmin)
+    public EventoDettaglioDTO creaEvento(EventoCreateDTO dto, Long creatoreId) {
+>>>>>>> release
         AppUser creatore = userRepository.findById(creatoreId)
                 .orElseThrow(() -> new RuntimeException("Creatore non trovato"));
 
@@ -36,10 +51,16 @@ public class EventoService {
             throw new RuntimeException("Solo gli admin possono creare eventi!");
         }
 
+        // 🔹 Mappa DTO → Entity
+        Evento evento = EventoMapper.fromCreateDTO(dto);
         evento.setCreatore(creatore);
-        return eventoRepository.save(evento);
+
+        // 🔹 Salva e restituisci DTO di dettaglio
+        Evento salvato = eventoRepository.save(evento);
+        return EventoMapper.toDTO(salvato);
     }
 
+<<<<<<< HEAD
     public List<EventoDto> getAllEvents() {
     	List<Evento> listEventsEntity= eventoRepository.findAll();
     	List<EventoDto> listEventsDto = new ArrayList<EventoDto>();
@@ -48,6 +69,30 @@ public class EventoService {
     		listEventsDto.add(modelMapper.map(elem,EventoDto.class));
     	});
         return listEventsDto;
+=======
+    // 🔹 Lista di tutti gli eventi
+    public List<EventoDTO> getAllEventi() {
+        List<Evento> eventi = eventoRepository.findAll();
+
+        return eventi.stream().map(ev -> {
+            CreatoreDTO creatoreDto = null;
+            if (ev.getCreatore() != null) {
+                creatoreDto = new CreatoreDTO(
+                        ev.getCreatore().getId(),
+                        ev.getCreatore().getUsername()
+                );
+            }
+
+            return new EventoDTO(
+                    ev.getId(),
+                    ev.getTitolo(),
+                    ev.getDescrizione(),
+                    ev.getLuogo(),
+                    ev.getDataInizio(),
+                    creatoreDto
+            );
+        }).collect(Collectors.toList());
+>>>>>>> release
     }
 
     public EventoDto iscriviStudente(Long eventoId, Long studenteId) {
@@ -99,6 +144,7 @@ public class EventoService {
         evento.getIscritti().remove(studente);
         return eventoRepository.save(evento);
     }
+<<<<<<< HEAD
     
     public EventoDto getEventDetails(Long id) {
     	
@@ -107,6 +153,14 @@ public class EventoService {
         EventoDto eventdtoDto= modelMapper.map(event,EventoDto.class);
 
         return eventdtoDto;
+=======
+
+    public EventoDettaglioDTO getEventoDettaglio(Long id, String username) {
+        Evento evento = eventoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Evento non trovato con ID " + id));
+
+        return EventoMapper.toDTO(evento, username);
+>>>>>>> release
     }
 
 }

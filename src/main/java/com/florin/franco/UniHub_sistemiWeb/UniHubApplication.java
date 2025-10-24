@@ -1,8 +1,6 @@
 package com.florin.franco.UniHub_sistemiWeb;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +18,7 @@ import com.florin.franco.UniHub_sistemiWeb.entity.Evento;
 import com.florin.franco.UniHub_sistemiWeb.entity.Feedback;
 import com.florin.franco.UniHub_sistemiWeb.entity.FeedbackRepository;
 import com.florin.franco.UniHub_sistemiWeb.entity.Universita;
+import com.florin.franco.UniHub_sistemiWeb.repository.FeedbackRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.AppUserRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.ClubRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.CommentoRepository;

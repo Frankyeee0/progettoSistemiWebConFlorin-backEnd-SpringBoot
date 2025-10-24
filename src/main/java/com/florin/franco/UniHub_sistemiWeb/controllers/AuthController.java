@@ -65,6 +65,7 @@ public class AuthController {
 
 	 	        LoginResponse response = new LoginResponse(
 	 	            "Login effettuato con successo",
+                     user.getId(),
 	 	            user.getUsername(),
 	 	            user.getRole().name()
 	 	            );
