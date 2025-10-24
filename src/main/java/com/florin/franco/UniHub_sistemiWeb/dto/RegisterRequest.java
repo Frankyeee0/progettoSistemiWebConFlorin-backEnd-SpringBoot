@@ -18,5 +18,4 @@ public class RegisterRequest {
 
     private Long universitaId;       
     private Long dipartimentoId;     
-    private byte[] profileImage;     
 }

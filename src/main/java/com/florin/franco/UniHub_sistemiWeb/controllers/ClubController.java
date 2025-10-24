@@ -20,7 +20,7 @@ public class ClubController {
     private ClubService clubService;
 
     @PostMapping("/crea/{fondatoreId}")
-    public ResponseEntity<?> creaClub(@RequestBody Club club, @PathVariable Long fondatoreId) {
+    public ResponseEntity<?> creaClub(@RequestBody ClubDettaglioDto club, @PathVariable Long fondatoreId) {
         try {
             Club nuovoClub = clubService.creaClub(club, fondatoreId);
             return ResponseEntity.ok(nuovoClub);
@@ -29,7 +29,7 @@ public class ClubController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/getAllClubs")
     public ResponseEntity<List<ClubDto>> getAllClubs() {
         List<ClubDto> clubs = clubService.getTuttiClub();
         return ResponseEntity.ok(clubs);

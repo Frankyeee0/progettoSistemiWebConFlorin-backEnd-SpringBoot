@@ -32,8 +32,8 @@ public class AuthController {
     @Autowired
     private EmailService emailService;
     
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+	    @PostMapping("/register")
+	    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
             AppUser user = authService.registerUser(request);
             emailService.sendWelcomeEmail(user.getEmail(), user.getUsername());
@@ -42,7 +42,7 @@ public class AuthController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body("Errore: " + e.getMessage());
         }
-    }
+	    }
 	
 	 	@GetMapping("/check-username")
 	 	public ResponseEntity<Boolean> checkUsername(@RequestParam String username) {
@@ -56,21 +56,19 @@ public class AuthController {
 	 	    return ResponseEntity.ok(exists);
 	 	}
 
-
-	    
 	 	@PostMapping("/login")
 	 	public ResponseEntity<?> login(@RequestBody LoginRequest request) {
 	 	    try {
+	 	    	
 	 	        AppUser user = authService.login(request.getUsername(), request.getPassword());
 
 	 	        LoginResponse response = new LoginResponse(
 	 	            "Login effettuato con successo",
                      user.getId(),
-	 	            user.getUsername(),
-	 	            user.getRole().name()
+	 	             user.getUsername(),
+	 	             user.getRole().name()
 	 	            );
 	 	        
-
 	 	        return ResponseEntity.ok(response);
 
 	 	    } catch (RuntimeException e) {

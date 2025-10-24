@@ -56,9 +56,7 @@ public class AppUser {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Lob
-    @Column(name = "immagineProfilo")
-    private byte[] immagineProfilo;
+   
 
     @ManyToOne
     @JoinColumn(name = "dipartimento_id")

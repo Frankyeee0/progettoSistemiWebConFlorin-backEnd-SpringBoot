@@ -1,7 +1,7 @@
 package com.florin.franco.UniHub_sistemiWeb.dto;
 import lombok.Data;
 
-
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -15,5 +15,6 @@ public class ClubDettaglioDto {
     private String descrizione;
     private String fondatoreUsername;
     private int postiDisponibili;
+    private LocalDateTime dataCreazione;
     private List<UserLiteDto> membri;
 }

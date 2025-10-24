@@ -16,7 +16,6 @@ import com.florin.franco.UniHub_sistemiWeb.entity.Commento;
 import com.florin.franco.UniHub_sistemiWeb.entity.Dipartimento;
 import com.florin.franco.UniHub_sistemiWeb.entity.Evento;
 import com.florin.franco.UniHub_sistemiWeb.entity.Feedback;
-import com.florin.franco.UniHub_sistemiWeb.entity.FeedbackRepository;
 import com.florin.franco.UniHub_sistemiWeb.entity.Universita;
 import com.florin.franco.UniHub_sistemiWeb.repository.FeedbackRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.AppUserRepository;

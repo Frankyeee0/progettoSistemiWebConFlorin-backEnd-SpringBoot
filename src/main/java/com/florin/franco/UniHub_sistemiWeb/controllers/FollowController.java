@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import com.florin.franco.UniHub_sistemiWeb.entity.AppUser;
 import com.florin.franco.UniHub_sistemiWeb.service.FollowService;
 
-// FollowController.java
 @RestController
 @RequestMapping("/api/follow")
 @RequiredArgsConstructor
@@ -18,14 +17,14 @@ public class FollowController {
 
     private final FollowService followService;
 
-    @PostMapping("/{followerId}/segui/{seguitoId}")
-    public ResponseEntity<?> segui(@PathVariable Long followerId, @PathVariable Long seguitoId) {
+    @PostMapping("/{currentUserId}/segui/{toFolloweUserId}")
+    public ResponseEntity<?> segui(@PathVariable Long currentUserId, @PathVariable Long toFolloweUserId) {
         try {
-            followService.segui(followerId, seguitoId);
+            followService.segui(currentUserId, toFolloweUserId);
             return ResponseEntity.ok(Map.of(
                     "message", "Ora segui l’utente",
-                    "followerId", followerId,
-                    "seguitoId", seguitoId
+                    "followerId", currentUserId,
+                    "seguitoId", toFolloweUserId
             ));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));

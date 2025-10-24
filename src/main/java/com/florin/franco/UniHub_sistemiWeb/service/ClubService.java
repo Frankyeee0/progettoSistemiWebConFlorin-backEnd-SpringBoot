@@ -28,7 +28,7 @@ public class ClubService {
 	    @Autowired
 	    private ModelMapper modelMapper;
 
-	    public Club creaClub(Club club, Long fondatoreId) {
+	    public Club creaClub(ClubDettaglioDto clubDto, Long fondatoreId) {
 	        AppUser fondatore = userRepository.findById(fondatoreId)
 	                .orElseThrow(() -> new RuntimeException("Fondatore non trovato"));
 
@@ -36,8 +36,11 @@ public class ClubService {
 	            throw new RuntimeException("Solo gli admin possono creare club!");
 	        }
 
-	        club.setFondatore(fondatore);
-	        return clubRepository.save(club);
+	        clubDto.setFondatoreUsername(fondatore.getUsername());
+	        
+	        Club clubEntity = modelMapper.map(clubDto, Club.class);
+	        
+	        return clubRepository.save(clubEntity);
 	    }
 
 	    public List<ClubDto> getTuttiClub() {

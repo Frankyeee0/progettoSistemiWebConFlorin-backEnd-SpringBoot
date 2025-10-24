@@ -58,7 +58,7 @@ public class EmailService {
 	                        .replace("{{nomeUtente}}", nomeUtente)
 	                        .replace("{{linkLogin}}", "https://unihub.it/login");
 
-	                sendHtmlEmail(to, "Benvenuto su UniHub 🎓", html);
+	                sendHtmlEmail(to, "Benvenuto su UniHub", html);
 	                System.out.println("Email di benvenuto inviata a " + to);
 	            }
 
