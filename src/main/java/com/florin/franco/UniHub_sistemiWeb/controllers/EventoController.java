@@ -68,17 +68,5 @@ public class EventoController {
             return ResponseEntity.badRequest().body( e.getMessage());
         }
     }
-    
-    @GetMapping("/{eventoId}")
-    public ResponseEntity<?> getEventoDettaglio(
-            @PathVariable Long eventoId,
-            @RequestParam(required = false) Long userId
-    ) {
-        try {
-            EventoDettaglioDTO dettaglio = eventoService.getEventoDettaglio(eventoId, userId);
-            return ResponseEntity.ok(dettaglio);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body("Errore: " + e.getMessage());
-        }
-    }
+
 }
