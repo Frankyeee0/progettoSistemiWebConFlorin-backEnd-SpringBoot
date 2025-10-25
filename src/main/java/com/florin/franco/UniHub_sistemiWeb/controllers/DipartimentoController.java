@@ -8,50 +8,44 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.florin.franco.UniHub_sistemiWeb.entity.Dipartimento;
-import com.florin.franco.UniHub_sistemiWeb.entity.Universita;
-import com.florin.franco.UniHub_sistemiWeb.repository.DipartimentoRepository;
-import com.florin.franco.UniHub_sistemiWeb.repository.UniversitaRepository;
+import com.florin.franco.UniHub_sistemiWeb.dto.DipartimentoDto;
+import com.florin.franco.UniHub_sistemiWeb.service.DipartimentoService;
 @RestController
 @RequestMapping("/api/universita")
 public class DipartimentoController {
 
     @Autowired
-    private DipartimentoRepository dipartimentoRepository;
-
-    @Autowired
-    private UniversitaRepository universitaRepository;
+    private DipartimentoService dipartimentoService;
 
     @GetMapping("/{universitaId}/dipartimenti")
-    public ResponseEntity<List<Dipartimento>> getDipartimentiByUniversita(@PathVariable Long universitaId) {
-        List<Dipartimento> dipartimenti = dipartimentoRepository.findByUniversitaId(universitaId);
-        return ResponseEntity.ok(dipartimenti);
+    public ResponseEntity<List<DipartimentoDto>> getDipartimenti(@PathVariable Long universitaId) {
+        return ResponseEntity.ok(dipartimentoService.getDipartimentiByUniversita(universitaId));
     }
 
     @PostMapping("/{universitaId}/dipartimenti")
-    public ResponseEntity<?> addDipartimento(
+    public ResponseEntity<DipartimentoDto> addDipartimento(
             @PathVariable Long universitaId,
-            @RequestBody Dipartimento nuovoDipartimento
+            @RequestBody DipartimentoDto dto
     ) {
-        Universita universita = universitaRepository.findById(universitaId)
-                .orElseThrow(() -> new RuntimeException("Università non trovata"));
+        return ResponseEntity.ok(dipartimentoService.createDipartimento(universitaId, dto));
+    }
 
-        nuovoDipartimento.setUniversita(universita);
-        Dipartimento salvato = dipartimentoRepository.save(nuovoDipartimento);
-
-        return ResponseEntity.ok(salvato);
+    @PutMapping("/dipartimenti/{dipartimentoId}")
+    public ResponseEntity<DipartimentoDto> updateDipartimento(
+            @PathVariable Long dipartimentoId,
+            @RequestBody DipartimentoDto dto
+    ) {
+        return ResponseEntity.ok(dipartimentoService.updateDipartimento(dipartimentoId, dto));
     }
 
     @DeleteMapping("/dipartimenti/{dipartimentoId}")
     public ResponseEntity<String> deleteDipartimento(@PathVariable Long dipartimentoId) {
-        Dipartimento dip = dipartimentoRepository.findById(dipartimentoId)
-                .orElseThrow(() -> new RuntimeException("Dipartimento non trovato"));
-
-        dipartimentoRepository.delete(dip);
+        dipartimentoService.deleteDipartimento(dipartimentoId);
         return ResponseEntity.ok("Dipartimento eliminato con successo");
     }
 }
