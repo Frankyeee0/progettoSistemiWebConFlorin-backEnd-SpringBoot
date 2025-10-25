@@ -18,6 +18,6 @@ public class UserProfileDTO {
     private long followerCount;
     private long followingCount;
     private boolean following;
-    private List<EventoDTO> recentEvents; // ✅ qui usi direttamente il tuo DTO
+    private List<EventoDTO> recentEvents; 
 }
 

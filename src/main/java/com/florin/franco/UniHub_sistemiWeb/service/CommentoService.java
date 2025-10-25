@@ -110,6 +110,7 @@ public class CommentoService {
         }
         commentoRepository.deleteById(id);
     }
+
  
     private CommentoDto mapToDto(Commento entity) {
         CommentoDto dto = modelMapper.map(entity, CommentoDto.class);
@@ -131,6 +132,14 @@ public class CommentoService {
  
         return dto;
     }
-}
+    
+    public List<CommentoDto> getCommentiByAutoreId(Long autoreId) {
+        List<Commento> commenti = commentoRepository.findByAutoreId(autoreId);
+
+        return commenti.stream()
+                .map(c -> modelMapper.map(c, CommentoDto.class))
+                .collect(Collectors.toList());
+    	}
+	}
  
  
