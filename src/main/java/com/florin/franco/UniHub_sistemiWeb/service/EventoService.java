@@ -116,6 +116,45 @@ public class EventoService {
 
         return eventdtoDto;}
 
+    public EventoDettaglioDTO getEventoDettaglio(Long eventoId, Long userId) {
+        Evento evento = eventoRepository.findById(eventoId)
+                .orElseThrow(() -> new RuntimeException("Evento non trovato"));
+
+        boolean userIscritto = false;
+        if (userId != null) {
+            userIscritto = evento.getIscritti().stream()
+                    .anyMatch(u -> u.getId().equals(userId));
+        }
+
+        return toDettaglioDTO(evento, userIscritto);
+    }
+
+    private EventoDettaglioDTO toDettaglioDTO(Evento evento, boolean userIscritto) {
+        EventoDettaglioDTO dto = new EventoDettaglioDTO();
+        dto.setId(evento.getId());
+        dto.setTitolo(evento.getTitolo());
+        dto.setDescrizione(evento.getDescrizione());
+        dto.setDataInizio(evento.getDataInizio());
+        dto.setDataFine(evento.getDataFine());
+        dto.setLuogo(evento.getLuogo());
+        dto.setPostiTotali(evento.getPostiTotali());
+        dto.setPostiDisponibili(evento.getPostiDisponibili());
+        dto.setDeadlineIscrizione(evento.getDeadlineIscrizione());
+        dto.setUserIscritto(userIscritto);
+
+        // Imposta il creatore
+        var creatore = evento.getCreatore();
+        if (creatore != null) {
+            dto.setCreatore(new CreatoreDTO(
+                    creatore.getId(),
+                    creatore.getUsername()
+                  
+            ));
+        }
+
+        return dto;
+    }
+
 //    public EventoDettaglioDTO getEventoDettaglio(Long id, String username) {
 //        Evento evento = eventoRepository.findById(id)
 //                .orElseThrow(() -> new RuntimeException("Evento non trovato con ID " + id));
