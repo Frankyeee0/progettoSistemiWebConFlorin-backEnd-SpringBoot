@@ -26,14 +26,12 @@ public class DipartimentoController {
     @Autowired
     private UniversitaRepository universitaRepository;
 
-    // 🔹 GET → restituisce tutti i dipartimenti di una università
     @GetMapping("/{universitaId}/dipartimenti")
     public ResponseEntity<List<Dipartimento>> getDipartimentiByUniversita(@PathVariable Long universitaId) {
         List<Dipartimento> dipartimenti = dipartimentoRepository.findByUniversitaId(universitaId);
         return ResponseEntity.ok(dipartimenti);
     }
 
-    // 🔹 POST → aggiunge un nuovo dipartimento a una università
     @PostMapping("/{universitaId}/dipartimenti")
     public ResponseEntity<?> addDipartimento(
             @PathVariable Long universitaId,
@@ -48,7 +46,6 @@ public class DipartimentoController {
         return ResponseEntity.ok(salvato);
     }
 
-    // 🔹 DELETE → elimina un dipartimento per ID
     @DeleteMapping("/dipartimenti/{dipartimentoId}")
     public ResponseEntity<String> deleteDipartimento(@PathVariable Long dipartimentoId) {
         Dipartimento dip = dipartimentoRepository.findById(dipartimentoId)

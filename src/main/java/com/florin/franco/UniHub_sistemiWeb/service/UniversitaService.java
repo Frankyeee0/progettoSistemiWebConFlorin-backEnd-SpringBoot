@@ -24,8 +24,7 @@ public class UniversitaService {
 	    @Autowired
 	    private ModelMapper modelMapper;
 
-	    /**
-	     */
+	  
 	    public List<UniversitaDto> getAllUniversita() {
 	        List<Universita> entityList = universitaRepository.findAll();
 

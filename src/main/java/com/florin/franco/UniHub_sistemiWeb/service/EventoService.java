@@ -142,7 +142,6 @@ public class EventoService {
         dto.setDeadlineIscrizione(evento.getDeadlineIscrizione());
         dto.setUserIscritto(userIscritto);
 
-        // Imposta il creatore
         var creatore = evento.getCreatore();
         if (creatore != null) {
             dto.setCreatore(new CreatoreDTO(

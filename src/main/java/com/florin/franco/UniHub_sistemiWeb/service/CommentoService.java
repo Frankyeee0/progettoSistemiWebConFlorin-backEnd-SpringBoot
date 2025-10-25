@@ -37,7 +37,6 @@ public class CommentoService {
     @Autowired
     private ModelMapper modelMapper;
  
-    // 🔹 GET → tutti i commenti
     public List<CommentoDto> getAllCommenti() {
         return commentoRepository.findAll()
                 .stream()
@@ -45,14 +44,12 @@ public class CommentoService {
                 .collect(Collectors.toList());
     }
  
-    // 🔹 GET → commento per ID
     public CommentoDto getCommentoById(Long id) {
         Commento commento = commentoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Commento non trovato con ID " + id));
         return mapToDto(commento);
     }
  
-    // 🔹 GET → commenti per evento
     public List<CommentoDto> getCommentiByEvento(Long eventoId) {
         List<Commento> commenti = commentoRepository.findByEventoId(eventoId);
         return commenti.stream()
@@ -60,7 +57,6 @@ public class CommentoService {
                 .collect(Collectors.toList());
     }
  
-    // 🔹 GET → commenti per club
     public List<CommentoDto> getCommentiByClub(Long clubId) {
         List<Commento> commenti = commentoRepository.findByClubId(clubId);
         return commenti.stream()
@@ -68,14 +64,13 @@ public class CommentoService {
                 .collect(Collectors.toList());
     }
  
-    // 🔹 POST → crea un nuovo commento
     public CommentoDto creaCommento(CommentoDto dto) {
         Commento entity = new Commento();
  
         entity.setTesto(dto.getTesto());
         entity.setDataCreazione(LocalDateTime.now());
  
-        // Autore
+
         if (dto.getAutore() == null || dto.getAutore().getId() == null) {
             throw new RuntimeException("Autore mancante nel commento");
         }
@@ -83,7 +78,6 @@ public class CommentoService {
                 .orElseThrow(() -> new RuntimeException("Autore non trovato"));
         entity.setAutore(autore);
  
-        // Evento o Club
         if (dto.getEventoId() != null) {
             Evento evento = eventoRepository.findById(dto.getEventoId())
                     .orElseThrow(() -> new RuntimeException("Evento non trovato"));
@@ -100,7 +94,6 @@ public class CommentoService {
         return mapToDto(salvato);
     }
  
-    // 🔹 PUT → aggiorna un commento esistente
     public CommentoDto aggiornaCommento(Long id, CommentoDto dto) {
         Commento commento = commentoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Commento non trovato con ID " + id));
@@ -111,7 +104,6 @@ public class CommentoService {
         return mapToDto(aggiornato);
     }
  
-    // 🔹 DELETE → elimina un commento
     public void eliminaCommento(Long id) {
         if (!commentoRepository.existsById(id)) {
             throw new RuntimeException("Commento non trovato con ID " + id);
@@ -119,7 +111,6 @@ public class CommentoService {
         commentoRepository.deleteById(id);
     }
  
-    // 🔹 Mapper interno Entity → DTO
     private CommentoDto mapToDto(Commento entity) {
         CommentoDto dto = modelMapper.map(entity, CommentoDto.class);
  

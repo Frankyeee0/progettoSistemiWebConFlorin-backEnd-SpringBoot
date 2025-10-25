@@ -47,7 +47,7 @@ public interface AppUserRepository  extends JpaRepository
     boolean existsFollow(@Param("followerId") Long followerId,
                          @Param("seguitoId") Long seguitoId);
 
-    // 👇 contatori senza inizializzare le collezioni
+    // contatori senza inizializzare le collezioni
     @Query("select count(f) from AppUser u join u.follower f where u.id = :userId")
     long countFollower(@Param("userId") Long userId);
 
