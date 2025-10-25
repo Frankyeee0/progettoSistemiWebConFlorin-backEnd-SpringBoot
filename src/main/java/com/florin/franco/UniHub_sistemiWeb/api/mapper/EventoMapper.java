@@ -21,7 +21,7 @@ public class EventoMapper {
                 e.getPostiDisponibili(),
                 e.getDeadlineIscrizione(),
                 toCreatoreDTO(e.getCreatore()),
-                false // ✅ di default non iscritto
+                false 
         );
     }
 

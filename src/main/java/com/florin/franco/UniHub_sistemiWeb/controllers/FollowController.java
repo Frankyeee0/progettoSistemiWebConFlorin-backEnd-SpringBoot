@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.florin.franco.UniHub_sistemiWeb.service.FollowService;
 
-// FollowController.java
 @RestController
 @RequestMapping("/api/follow")
 @RequiredArgsConstructor
@@ -45,18 +44,16 @@ public class FollowController {
         }
     }
 
-    // 👇 Stato "io seguo X?"
     @GetMapping("/{followerId}/status/{seguitoId}")
     public ResponseEntity<?> isFollowing(@PathVariable Long followerId, @PathVariable Long seguitoId) {
         try {
             boolean following = followService.isFollowing(followerId, seguitoId);
             return ResponseEntity.ok(following);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body("❌ " + e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    // Info follow (contatori + liste username)
     @GetMapping("/{userId}/info")
     public ResponseEntity<?> getFollowInfo(@PathVariable Long userId) {
         try {

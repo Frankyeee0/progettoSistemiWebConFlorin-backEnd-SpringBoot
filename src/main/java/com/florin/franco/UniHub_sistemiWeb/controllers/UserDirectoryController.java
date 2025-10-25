@@ -15,7 +15,6 @@ public class UserDirectoryController {
     @Autowired
     private UserDirectoryService service;
 
-    // Esempio: GET /api/users?currentUserId=1&q=al&page=0&size=12
     @GetMapping
     public Page<UserCardDTO> listUsers(
             @RequestParam Long currentUserId,
@@ -33,7 +32,7 @@ public class UserDirectoryController {
             UserProfileDTO dto = service.getUserProfile(id, viewerId);
             return ResponseEntity.ok(dto);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body("❌ " + e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }
