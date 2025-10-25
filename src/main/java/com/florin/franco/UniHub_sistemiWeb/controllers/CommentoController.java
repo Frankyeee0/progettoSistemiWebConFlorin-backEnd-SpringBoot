@@ -60,4 +60,10 @@ public class CommentoController {
         commentoService.eliminaCommento(id);
         return ResponseEntity.ok("Commento con ID " + id + " eliminato con successo");
     }
+    
+    @GetMapping("/autore/{autoreId}")
+    public ResponseEntity<List<CommentoDto>> getCommentiByAutore(@PathVariable Long autoreId) {
+        List<CommentoDto> commenti = commentoService.getCommentiByAutoreId(autoreId);
+        return ResponseEntity.ok(commenti);
+    }
 }
