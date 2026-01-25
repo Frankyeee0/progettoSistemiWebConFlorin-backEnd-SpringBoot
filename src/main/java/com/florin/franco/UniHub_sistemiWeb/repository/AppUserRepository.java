@@ -25,6 +25,9 @@ public interface AppUserRepository  extends JpaRepository
     @Query("SELECT u.seguiti FROM AppUser u WHERE u.id = :id")
     Set<AppUser> findSeguitiByUserId(@Param("id") Long id);
 
+    @Query("SELECT u.follower FROM AppUser u WHERE u.id = :id")
+    Set<AppUser> findFollowerByUserId(@Param("id") Long id);
+
     Page<AppUser> findByIdNot(Long id, Pageable pageable);
 
     // esclusione + ricerca su username/nome/cognome

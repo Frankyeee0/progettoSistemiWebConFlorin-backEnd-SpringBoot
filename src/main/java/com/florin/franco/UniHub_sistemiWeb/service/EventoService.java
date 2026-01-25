@@ -9,6 +9,7 @@ import com.florin.franco.UniHub_sistemiWeb.api.dto.CreatoreDTO;
 import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoCreateDTO;
 import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoDTO;
 import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoDettaglioDTO;
+import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoUpdateDTO;
 import com.florin.franco.UniHub_sistemiWeb.api.mapper.EventoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,9 @@ public class EventoService {
     
     @Autowired
     ModelMapper modelMapper;
+
+    @Autowired
+    private EmailService emailService;
    
 
     public EventoDettaglioDTO creaEvento(EventoCreateDTO dto, Long creatoreId) {
@@ -45,6 +49,7 @@ public class EventoService {
         evento.setCreatore(creatore);
 
         Evento salvato = eventoRepository.save(evento);
+        notifyFollowersNewEvent(salvato);
         return EventoMapper.toDTO(salvato);
     }
 
@@ -95,6 +100,7 @@ public class EventoService {
 
         dto.setIscritti(iscrittiDto);
 
+        notifySignup(evento, studente);
         return dto;
     }
 
@@ -115,6 +121,54 @@ public class EventoService {
         EventoDto eventdtoDto= modelMapper.map(event,EventoDto.class);
 
         return eventdtoDto;}
+
+    public EventoDettaglioDTO aggiornaEvento(Long eventoId, EventoUpdateDTO dto, Long editorId) {
+        Evento evento = eventoRepository.findById(eventoId)
+                .orElseThrow(() -> new RuntimeException("Evento non trovato"));
+
+        if (editorId != null) {
+            AppUser editor = userRepository.findById(editorId)
+                    .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+            if (editor.getRole() != Ruolo.ADMIN && editor.getRole() != Ruolo.SUPERADMIN) {
+                throw new RuntimeException("Solo gli admin possono modificare eventi!");
+            }
+        }
+
+        String oldWhen = formatDate(evento.getDataInizio());
+        String oldWhere = evento.getLuogo();
+
+        if (dto.getTitolo() != null) {
+            evento.setTitolo(dto.getTitolo());
+        }
+        if (dto.getDescrizione() != null) {
+            evento.setDescrizione(dto.getDescrizione());
+        }
+        if (dto.getLuogo() != null) {
+            evento.setLuogo(dto.getLuogo());
+        }
+        if (dto.getDataInizio() != null) {
+            evento.setDataInizio(dto.getDataInizio());
+        }
+        if (dto.getDataFine() != null) {
+            evento.setDataFine(dto.getDataFine());
+        }
+        if (dto.getPostiTotali() != null) {
+            evento.setPostiTotali(dto.getPostiTotali());
+        }
+        if (dto.getDeadlineIscrizione() != null) {
+            evento.setDeadlineIscrizione(dto.getDeadlineIscrizione());
+        }
+
+        Evento salvato = eventoRepository.save(evento);
+
+        boolean changed = !equalsNullable(oldWhere, salvato.getLuogo())
+                || !equalsNullable(oldWhen, formatDate(salvato.getDataInizio()));
+        if (changed) {
+            notifyEventUpdate(salvato);
+        }
+
+        return EventoMapper.toDTO(salvato);
+    }
 
     public EventoDettaglioDTO getEventoDettaglio(Long eventoId, Long userId) {
         Evento evento = eventoRepository.findById(eventoId)
@@ -152,6 +206,67 @@ public class EventoService {
         }
 
         return dto;
+    }
+
+    private void notifyFollowersNewEvent(Evento evento) {
+        if (evento.getCreatore() == null) return;
+        var followers = userRepository.findFollowerByUserId(evento.getCreatore().getId());
+        String when = formatDate(evento.getDataInizio());
+        String where = evento.getLuogo();
+        for (AppUser follower : followers) {
+            if (!follower.isEmailNotificationsEnabled()) continue;
+            if (follower.getEmail() == null || follower.getEmail().isBlank()) continue;
+            try {
+                emailService.sendNewEventEmail(
+                        follower.getEmail(),
+                        evento.getCreatore().getUsername(),
+                        evento.getTitolo(),
+                        when,
+                        where
+                );
+            } catch (Exception e) {
+                System.err.println("Errore email nuovo evento: " + e.getMessage());
+            }
+        }
+    }
+
+    private void notifySignup(Evento evento, AppUser studente) {
+        if (studente == null || studente.getEmail() == null || studente.getEmail().isBlank()) return;
+        if (!studente.isEmailNotificationsEnabled()) return;
+        try {
+            emailService.sendEventSignupEmail(
+                    studente.getEmail(),
+                    evento.getTitolo(),
+                    formatDate(evento.getDataInizio()),
+                    evento.getLuogo()
+            );
+        } catch (Exception e) {
+            System.err.println("Errore email iscrizione evento: " + e.getMessage());
+        }
+    }
+
+    private void notifyEventUpdate(Evento evento) {
+        String when = formatDate(evento.getDataInizio());
+        String where = evento.getLuogo();
+        for (AppUser iscritto : evento.getIscritti()) {
+            if (!iscritto.isEmailNotificationsEnabled()) continue;
+            if (iscritto.getEmail() == null || iscritto.getEmail().isBlank()) continue;
+            try {
+                emailService.sendEventUpdateEmail(iscritto.getEmail(), evento.getTitolo(), when, where);
+            } catch (Exception e) {
+                System.err.println("Errore email aggiornamento evento: " + e.getMessage());
+            }
+        }
+    }
+
+    private String formatDate(LocalDateTime dt) {
+        return dt == null ? "TBD" : dt.toString();
+    }
+
+    private boolean equalsNullable(String left, String right) {
+        if (left == null && right == null) return true;
+        if (left == null || right == null) return false;
+        return left.equals(right);
     }
 
 //    public EventoDettaglioDTO getEventoDettaglio(Long id, String username) {

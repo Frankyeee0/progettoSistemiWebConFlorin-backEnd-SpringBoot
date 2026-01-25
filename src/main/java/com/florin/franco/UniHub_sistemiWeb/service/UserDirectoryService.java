@@ -98,6 +98,9 @@ public class UserDirectoryService {
                     .orElseThrow(() -> new RuntimeException("Dipartimento non trovato"));
             user.setDipartimento(dip);
         }
+        if (request.getEmailNotificationsEnabled() != null) {
+            user.setEmailNotificationsEnabled(request.getEmailNotificationsEnabled());
+        }
 
         userRepo.save(user);
 

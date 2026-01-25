@@ -55,6 +55,7 @@ public class AuthService {
         user.setEmail(request.getEmail());
         user.setRole(Ruolo.STUDENT);
         user.setDipartimento(dipartimento);
+        user.setEmailNotificationsEnabled(true);
 
         return userRepository.save(user);
     }

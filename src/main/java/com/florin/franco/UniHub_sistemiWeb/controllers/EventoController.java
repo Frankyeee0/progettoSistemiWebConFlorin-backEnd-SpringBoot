@@ -5,6 +5,7 @@ import java.util.List;
 import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoCreateDTO;
 import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoDTO;
 import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoDettaglioDTO;
+import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoUpdateDTO;
 import com.florin.franco.UniHub_sistemiWeb.entity.AppUser;
 import com.florin.franco.UniHub_sistemiWeb.repository.AppUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +67,17 @@ public class EventoController {
             return ResponseEntity.ok(eventoService.disiscriviStudente(eventoId, studenteId));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body( e.getMessage());
+        }
+    }
+
+    @PutMapping("/{eventoId}")
+    public ResponseEntity<?> aggiornaEvento(@PathVariable Long eventoId,
+                                            @RequestBody EventoUpdateDTO dto,
+                                            @RequestParam(required = false) Long editorId) {
+        try {
+            return ResponseEntity.ok(eventoService.aggiornaEvento(eventoId, dto, editorId));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

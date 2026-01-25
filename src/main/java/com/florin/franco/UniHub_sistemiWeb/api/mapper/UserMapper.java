@@ -70,6 +70,7 @@ public class UserMapper {
                 u.getEmail(),
                 universitaId,
                 dipartimentoId,
+                u.isEmailNotificationsEnabled(),
                 university,
                 faculty,
                 followerCount,

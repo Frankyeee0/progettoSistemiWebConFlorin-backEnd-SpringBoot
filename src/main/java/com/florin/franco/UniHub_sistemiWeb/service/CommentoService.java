@@ -36,6 +36,9 @@ public class CommentoService {
  
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private EmailService emailService;
  
     public List<CommentoDto> getAllCommenti() {
         return commentoRepository.findAll()
@@ -91,6 +94,7 @@ public class CommentoService {
         }
  
         Commento salvato = commentoRepository.save(entity);
+        notifyCommentedEvent(salvato);
         return mapToDto(salvato);
     }
  
@@ -140,6 +144,24 @@ public class CommentoService {
                 .map(c -> modelMapper.map(c, CommentoDto.class))
                 .collect(Collectors.toList());
     	}
+
+    private void notifyCommentedEvent(Commento commento) {
+        if (commento.getEvento() == null) return;
+        Evento evento = commento.getEvento();
+        if (evento.getCreatore() == null) return;
+        AppUser creatore = evento.getCreatore();
+        if (commento.getAutore() != null && creatore.getId().equals(commento.getAutore().getId())) {
+            return;
+        }
+        if (!creatore.isEmailNotificationsEnabled()) return;
+        if (creatore.getEmail() == null || creatore.getEmail().isBlank()) return;
+        try {
+            String commenter = commento.getAutore() != null ? commento.getAutore().getUsername() : "utente";
+            emailService.sendCommentNotificationEmail(creatore.getEmail(), evento.getTitolo(), commenter);
+        } catch (Exception e) {
+            System.err.println("Errore email commento evento: " + e.getMessage());
+        }
+    }
 	}
  
  

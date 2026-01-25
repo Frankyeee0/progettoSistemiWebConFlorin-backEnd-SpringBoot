@@ -56,6 +56,9 @@ public class AppUser {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false)
+    private boolean emailNotificationsEnabled = true;
+
    
 
     @ManyToOne

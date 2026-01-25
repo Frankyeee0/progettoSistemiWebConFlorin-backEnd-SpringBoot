@@ -14,4 +14,5 @@ public class UserUpdateRequest {
     private String email;
     private String studentId;
     private Long dipartimentoId;
+    private Boolean emailNotificationsEnabled;
 }
