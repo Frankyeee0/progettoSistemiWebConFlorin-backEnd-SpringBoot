@@ -10,9 +10,12 @@ public class UserProfileDTO {
     private Long id;
     private String name;
     private String surname;
+    private String studentId;
     private String username;
     private String role;
     private String email;
+    private Long universitaId;
+    private Long dipartimentoId;
     private String university;
     private String faculty;
     private long followerCount;
@@ -20,4 +23,3 @@ public class UserProfileDTO {
     private boolean following;
     private List<EventoDTO> recentEvents; 
 }
-

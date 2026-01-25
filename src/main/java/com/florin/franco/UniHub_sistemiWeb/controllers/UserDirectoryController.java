@@ -2,6 +2,7 @@ package com.florin.franco.UniHub_sistemiWeb.controllers;
 
 import com.florin.franco.UniHub_sistemiWeb.api.dto.UserCardDTO;
 import com.florin.franco.UniHub_sistemiWeb.api.dto.UserProfileDTO;
+import com.florin.franco.UniHub_sistemiWeb.dto.UserUpdateRequest;
 import com.florin.franco.UniHub_sistemiWeb.service.UserDirectoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,6 +31,16 @@ public class UserDirectoryController {
                                         @RequestParam(required = false) Long viewerId) {
         try {
             UserProfileDTO dto = service.getUserProfile(id, viewerId);
+            return ResponseEntity.ok(dto);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateProfile(@PathVariable Long id, @RequestBody UserUpdateRequest request) {
+        try {
+            UserProfileDTO dto = service.updateUserProfile(id, request);
             return ResponseEntity.ok(dto);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

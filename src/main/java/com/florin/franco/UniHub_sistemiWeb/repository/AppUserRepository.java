@@ -17,9 +17,11 @@ public interface AppUserRepository  extends JpaRepository
 	
     Optional<AppUser> findByUsername(String username);
     Optional<AppUser> findByEmail(String email);
+    Optional<AppUser> findByStudentId(String studentId);
 
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
+    boolean existsByStudentId(String studentId);
     @Query("SELECT u.seguiti FROM AppUser u WHERE u.id = :id")
     Set<AppUser> findSeguitiByUserId(@Param("id") Long id);
 

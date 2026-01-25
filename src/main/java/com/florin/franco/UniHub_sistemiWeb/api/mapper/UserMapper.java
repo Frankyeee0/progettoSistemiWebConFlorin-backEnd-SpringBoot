@@ -36,11 +36,15 @@ public class UserMapper {
     ) {
         String university = null;
         String faculty = null;
+        Long universitaId = null;
+        Long dipartimentoId = null;
 
         if (u.getDipartimento() != null) {
             faculty = u.getDipartimento().getNome();
+            dipartimentoId = u.getDipartimento().getId();
             if (u.getDipartimento().getUniversita() != null) {
                 university = u.getDipartimento().getUniversita().getNome();
+                universitaId = u.getDipartimento().getUniversita().getId();
             }
         }
 
@@ -60,9 +64,12 @@ public class UserMapper {
                 u.getId(),
                 u.getName(),
                 u.getSurname(),
+                u.getStudentId(),
                 u.getUsername(),
                 u.getRole() != null ? u.getRole().name() : null,
                 u.getEmail(),
+                universitaId,
+                dipartimentoId,
                 university,
                 faculty,
                 followerCount,
