@@ -1,7 +1,9 @@
 package com.florin.franco.UniHub_sistemiWeb;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.boot.CommandLineRunner;
@@ -59,16 +61,25 @@ public class UniHubApplication {
 	            if (universitaRepo.count() == 0) {
 	                Universita unife = new Universita(null, "Università di Ferrara (UNIFE)", null);
 	                Universita unibo = new Universita(null, "Università di Bologna (UNIBO)", null);
-	                universitaRepo.saveAll(List.of(unife, unibo));
+	                Universita unimi = new Universita(null, "Università di Milano (UNIMI)", null);
+	                Universita unipi = new Universita(null, "Università di Pisa (UNIPI)", null);
+	                universitaRepo.saveAll(List.of(unife, unibo, unimi, unipi));
 
 	                Dipartimento ing = new Dipartimento(null, "Ingegneria", unife, null);
 	                Dipartimento eco = new Dipartimento(null, "Economia", unife, null);
 	                Dipartimento inf = new Dipartimento(null, "Informatica", unibo, null);
 	                Dipartimento fis = new Dipartimento(null, "Fisica", unibo, null);
-	                dipartimentoRepo.saveAll(List.of(ing, eco, inf, fis));
+	                Dipartimento med = new Dipartimento(null, "Medicina", unimi, null);
+	                Dipartimento giu = new Dipartimento(null, "Giurisprudenza", unimi, null);
+	                Dipartimento let = new Dipartimento(null, "Lettere", unipi, null);
+	                Dipartimento mat = new Dipartimento(null, "Matematica", unipi, null);
+	                dipartimentoRepo.saveAll(List.of(ing, eco, inf, fis, med, giu, let, mat));
 
 	                System.out.println("✅ Università e Dipartimenti creati.");
 	            }
+
+	            Map<String, Dipartimento> dipByName = new HashMap<>();
+	            dipartimentoRepo.findAll().forEach(d -> dipByName.put(d.getNome(), d));
 
 	            // === 👤 UTENTI ===
             if (userRepo.count() == 0) {
@@ -80,42 +91,78 @@ public class UniHubApplication {
 	                admin.setPassword(encoder.encode("1234"));
 	                admin.setEmail("admin@unihub.com");
 	                admin.setRole(Ruolo.SUPERADMIN);
+                    admin.setDipartimento(dipByName.get("Ingegneria"));
 
-	                AppUser francisc = new AppUser();
-	                francisc.setName("Francisc");
-	                francisc.setSurname("Pop");
-	                francisc.setStudentId("S001");
-	                francisc.setUsername("francisc");
-	                francisc.setPassword(encoder.encode("1234"));
-	                francisc.setEmail("francisc@student.unife.it");
-	                francisc.setRole(Ruolo.STUDENT);
+                AppUser planner = new AppUser();
+                planner.setName("Paolo");
+                planner.setSurname("Verdi");
+                planner.setStudentId("P010");
+                planner.setUsername("planner");
+                planner.setPassword(encoder.encode("1234"));
+                planner.setEmail("planner@unihub.com");
+                planner.setRole(Ruolo.PLANNER);
+                planner.setDipartimento(dipByName.get("Economia"));
 
-	                AppUser maria = new AppUser();
-	                maria.setName("Maria");
-	                maria.setSurname("Bianchi");
-	                maria.setStudentId("S002");
-	                maria.setUsername("maria");
-	                maria.setPassword(encoder.encode("1234"));
-	                maria.setEmail("maria@student.unibo.it");
-	                maria.setRole(Ruolo.STUDENT);
+                AppUser francisc = new AppUser();
+                francisc.setName("Francisc");
+                francisc.setSurname("Pop");
+                francisc.setStudentId("S001");
+                francisc.setUsername("francisc");
+                francisc.setPassword(encoder.encode("1234"));
+                francisc.setEmail("francisc@student.unife.it");
+                francisc.setRole(Ruolo.STUDENT);
+                francisc.setDipartimento(dipByName.get("Informatica"));
 
-	                AppUser luca = new AppUser();
-	                luca.setName("Luca");
-	                luca.setSurname("Rossi");
-	                luca.setStudentId("S003");
-	                luca.setUsername("luca");
-	                luca.setPassword(encoder.encode("1234"));
-	                luca.setEmail("luca@student.unibo.it");
-	                luca.setRole(Ruolo.STUDENT);
+                AppUser maria = new AppUser();
+                maria.setName("Maria");
+                maria.setSurname("Bianchi");
+                maria.setStudentId("S002");
+                maria.setUsername("maria");
+                maria.setPassword(encoder.encode("1234"));
+                maria.setEmail("maria@student.unibo.it");
+                maria.setRole(Ruolo.STUDENT);
+                maria.setDipartimento(dipByName.get("Fisica"));
 
-                userRepo.saveAll(List.of(admin, francisc, maria, luca));
+                AppUser luca = new AppUser();
+                luca.setName("Luca");
+                luca.setSurname("Rossi");
+                luca.setStudentId("S003");
+                luca.setUsername("luca");
+                luca.setPassword(encoder.encode("1234"));
+                luca.setEmail("luca@student.unibo.it");
+                luca.setRole(Ruolo.STUDENT);
+                luca.setDipartimento(dipByName.get("Matematica"));
+
+                AppUser anna = new AppUser();
+                anna.setName("Anna");
+                anna.setSurname("Conti");
+                anna.setStudentId("S004");
+                anna.setUsername("anna");
+                anna.setPassword(encoder.encode("1234"));
+                anna.setEmail("anna@student.unimi.it");
+                anna.setRole(Ruolo.STUDENT);
+                anna.setDipartimento(dipByName.get("Medicina"));
+
+                AppUser marco = new AppUser();
+                marco.setName("Marco");
+                marco.setSurname("Gallo");
+                marco.setStudentId("S005");
+                marco.setUsername("marco");
+                marco.setPassword(encoder.encode("1234"));
+                marco.setEmail("marco@student.unipi.it");
+                marco.setRole(Ruolo.STUDENT);
+                marco.setDipartimento(dipByName.get("Lettere"));
+
+                userRepo.saveAll(List.of(admin, planner, francisc, maria, luca, anna, marco));
 
 	                // Relazioni follow
-	                francisc.setSeguiti(Set.of(maria, luca));
-	                maria.setSeguiti(Set.of(francisc));
-	                luca.setSeguiti(Set.of(admin));
+	                francisc.setSeguiti(Set.of(maria, luca, anna));
+	                maria.setSeguiti(Set.of(francisc, marco));
+	                luca.setSeguiti(Set.of(admin, planner));
+                    anna.setSeguiti(Set.of(maria));
+                    marco.setSeguiti(Set.of(francisc));
 
-	                userRepo.saveAll(List.of(francisc, maria, luca));
+	                userRepo.saveAll(List.of(francisc, maria, luca, anna, marco));
 
                 System.out.println("✅ Utenti e relazioni follow creati.");
             }
@@ -138,6 +185,8 @@ public class UniHubApplication {
 	            AppUser francisc = userRepo.findByUsername("francisc").get();
 	            AppUser maria = userRepo.findByUsername("maria").get();
 	            AppUser luca = userRepo.findByUsername("luca").get();
+	            AppUser anna = userRepo.findByUsername("anna").get();
+	            AppUser marco = userRepo.findByUsername("marco").get();
 
 	            // === 🎉 EVENTI ===
 	            if (eventoRepo.count() == 0) {
@@ -163,7 +212,29 @@ public class UniHubApplication {
 	                hackathon.setCreatore(admin);
 	                hackathon.setIscritti(Set.of(luca));
 
-	                eventoRepo.saveAll(List.of(careerDay, hackathon));
+	                Evento welcomeWeek = new Evento();
+	                welcomeWeek.setTitolo("Welcome Week");
+	                welcomeWeek.setDescrizione("Settimana di orientamento per le matricole.");
+	                welcomeWeek.setLuogo("Campus UNIMI");
+	                welcomeWeek.setDataInizio(LocalDateTime.of(2025, 10, 1, 9, 0));
+	                welcomeWeek.setDataFine(LocalDateTime.of(2025, 10, 5, 18, 0));
+	                welcomeWeek.setDeadlineIscrizione(LocalDateTime.of(2025, 9, 28, 23, 59));
+	                welcomeWeek.setPostiTotali(200);
+	                welcomeWeek.setCreatore(admin);
+	                welcomeWeek.setIscritti(Set.of(anna, marco));
+
+	                Evento mathMeetup = new Evento();
+	                mathMeetup.setTitolo("Math Meetup");
+	                mathMeetup.setDescrizione("Seminari e talk di matematica applicata.");
+	                mathMeetup.setLuogo("Aula 2, Matematica");
+	                mathMeetup.setDataInizio(LocalDateTime.of(2025, 11, 20, 15, 0));
+	                mathMeetup.setDataFine(LocalDateTime.of(2025, 11, 20, 19, 0));
+	                mathMeetup.setDeadlineIscrizione(LocalDateTime.of(2025, 11, 19, 18, 0));
+	                mathMeetup.setPostiTotali(80);
+	                mathMeetup.setCreatore(admin);
+	                mathMeetup.setIscritti(Set.of(luca, marco));
+
+	                eventoRepo.saveAll(List.of(careerDay, hackathon, welcomeWeek, mathMeetup));
 	                System.out.println("✅ Eventi creati.");
 	            }
 
@@ -183,26 +254,47 @@ public class UniHubApplication {
 	                fotografia.setFondatore(admin);
 	                fotografia.setMembri(Set.of(maria));
 
-	                clubRepo.saveAll(List.of(robotica, fotografia));
+	                Club musica = new Club();
+	                musica.setNome("Club di Musica");
+	                musica.setDescrizione("Jam session e concerti in universita.");
+	                musica.setMaxMembri(60);
+	                musica.setFondatore(admin);
+	                musica.setMembri(Set.of(anna, marco));
+
+	                Club ecoClub = new Club();
+	                ecoClub.setNome("Eco Club");
+	                ecoClub.setDescrizione("Iniziative green e sostenibilita.");
+	                ecoClub.setMaxMembri(45);
+	                ecoClub.setFondatore(admin);
+	                ecoClub.setMembri(Set.of(francisc, maria, luca));
+
+	                clubRepo.saveAll(List.of(robotica, fotografia, musica, ecoClub));
 	                System.out.println("✅ Club creati.");
 	            }
 
 	            // === 💬 COMMENTI & ⭐ FEEDBACK ===
 	            if (commentoRepo.count() == 0 || feedbackRepo.count() == 0) {
-	                Evento careerDay = eventoRepo.findAll().get(0);
-	                Evento hackathon = eventoRepo.findAll().get(1);
+	                List<Evento> eventi = eventoRepo.findAll();
+	                Evento careerDay = eventi.get(0);
+	                Evento hackathon = eventi.get(1);
+	                Evento welcomeWeek = eventi.get(2);
 	                Club robotica = clubRepo.findAll().get(0);
+	                Club musica = clubRepo.findAll().get(2);
 
 	                Commento c1 = new Commento(null, "Bellissimo evento!", LocalDateTime.now(), francisc, careerDay, null);
 	                Commento c2 = new Commento(null, "Grande esperienza!", LocalDateTime.now(), luca, hackathon, null);
 	                Commento c3 = new Commento(null, "Bellissima community!", LocalDateTime.now(), maria, null, robotica);
+	                Commento c4 = new Commento(null, "Ottimo per le matricole!", LocalDateTime.now(), anna, welcomeWeek, null);
+	                Commento c5 = new Commento(null, "Serata spettacolare!", LocalDateTime.now(), marco, null, musica);
 
 	                Feedback f1 = new Feedback(null, 5, "Evento ben organizzato!", LocalDateTime.now(), maria, careerDay, null);
 	                Feedback f2 = new Feedback(null, 4, "Hackathon stimolante!", LocalDateTime.now(), francisc, hackathon, null);
 	                Feedback f3 = new Feedback(null, 5, "Club accogliente!", LocalDateTime.now(), luca, null, robotica);
+	                Feedback f4 = new Feedback(null, 5, "Welcome week utilissima!", LocalDateTime.now(), anna, welcomeWeek, null);
+	                Feedback f5 = new Feedback(null, 4, "Atmosfera super!", LocalDateTime.now(), marco, null, musica);
 
-	                commentoRepo.saveAll(List.of(c1, c2, c3));
-	                feedbackRepo.saveAll(List.of(f1, f2, f3));
+	                commentoRepo.saveAll(List.of(c1, c2, c3, c4, c5));
+	                feedbackRepo.saveAll(List.of(f1, f2, f3, f4, f5));
 
 	                System.out.println("✅ Commenti e feedback creati.");
 	            }
