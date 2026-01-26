@@ -36,7 +36,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cfg = new CorsConfiguration();
-        cfg.setAllowedOrigins(List.of("http://localhost:5173")); // NON usare "*" se usi credenziali
+        cfg.setAllowedOrigins(List.of(
+                "http://localhost:5173",
+                "http://localhost:5174"
+        )); // NON usare "*" se usi credenziali
         cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));
         cfg.setAllowedHeaders(List.of("Authorization","Content-Type","X-Requested-With"));
         cfg.setAllowCredentials(true); // se invii cookie o Authorization
