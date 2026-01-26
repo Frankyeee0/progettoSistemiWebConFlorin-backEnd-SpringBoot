@@ -45,7 +45,10 @@ public class ClubService {
 
 	    public List<ClubDto> getTuttiClub() {
 	    	
-	        List<Club> listaClubEntity = clubRepository.findAll();
+        List<Club> listaClubEntity = clubRepository.findAll()
+                .stream()
+                .filter(c -> !c.isSuspended())
+                .toList();
 	        List<ClubDto> listaClubDto = new ArrayList<>();
 
 	        listaClubEntity.forEach(elem -> {

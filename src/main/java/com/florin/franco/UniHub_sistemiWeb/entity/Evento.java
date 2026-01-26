@@ -44,6 +44,9 @@ public class Evento {
     )
     private Set<AppUser> iscritti = new HashSet<>();
 
+    @Column(nullable = false)
+    private boolean hidden = false;
+
     @OneToMany(mappedBy = "evento", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("evento-commenti")
     private Set<Commento> commenti = new HashSet<>();

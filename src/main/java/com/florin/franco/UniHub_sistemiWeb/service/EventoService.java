@@ -54,7 +54,10 @@ public class EventoService {
     }
 
     public List<EventoDto> getAllEvents() {
-    	List<Evento> listEventsEntity= eventoRepository.findAll();
+    	List<Evento> listEventsEntity= eventoRepository.findAll()
+                .stream()
+                .filter(e -> !e.isHidden())
+                .toList();
     	List<EventoDto> listEventsDto = new ArrayList<EventoDto>();
     	
     	listEventsEntity.forEach(elem ->{
@@ -119,6 +122,8 @@ public class EventoService {
         Evento event = eventoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Evento non trovato"));
         EventoDto eventdtoDto= modelMapper.map(event,EventoDto.class);
+        eventdtoDto.setPostiDisponibili(event.getPostiDisponibili());
+        eventdtoDto.setDataFine(event.getDataFine());
 
         List<UserLiteDto> iscrittiDto = event.getIscritti().stream()
                 .map(u -> new UserLiteDto(u.getId(), u.getUsername(), u.getProfileImage()))

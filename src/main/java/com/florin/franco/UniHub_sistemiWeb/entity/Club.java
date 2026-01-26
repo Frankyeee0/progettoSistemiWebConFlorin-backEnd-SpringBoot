@@ -53,9 +53,12 @@ public class Club {
 	    @JsonManagedReference
 	    private Set<Commento> commenti = new HashSet<>();
 
-	    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
-	    @JsonManagedReference
-	    private Set<Feedback> feedbacks = new HashSet<>();
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private Set<Feedback> feedbacks = new HashSet<>();
+
+    @Column(nullable = false)
+    private boolean suspended = false;
 
 	    @Transient
 	    public int getPostiDisponibili() {
