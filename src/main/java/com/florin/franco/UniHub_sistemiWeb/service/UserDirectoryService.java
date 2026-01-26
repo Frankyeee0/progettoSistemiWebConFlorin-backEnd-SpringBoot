@@ -16,7 +16,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -100,6 +103,37 @@ public class UserDirectoryService {
         }
         if (request.getEmailNotificationsEnabled() != null) {
             user.setEmailNotificationsEnabled(request.getEmailNotificationsEnabled());
+        }
+
+        userRepo.save(user);
+
+        long followerCount = userRepo.countFollower(userId);
+        long followingCount = userRepo.countSeguiti(userId);
+        List<Evento> recent = eventoRepo.findTop6ByCreatore_IdOrderByDataInizioDesc(userId);
+
+        return UserMapper.toProfileDTO(user, false, followerCount, followingCount, recent);
+    }
+
+    public UserProfileDTO updateProfileImage(Long userId, MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new RuntimeException("File immagine mancante");
+        }
+        if (file.getContentType() == null || !file.getContentType().startsWith("image/")) {
+            throw new RuntimeException("Formato immagine non valido");
+        }
+        if (file.getSize() > 2 * 1024 * 1024) {
+            throw new RuntimeException("Immagine troppo grande (max 2MB)");
+        }
+
+        AppUser user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+
+        try {
+            String base64 = Base64.getEncoder().encodeToString(file.getBytes());
+            String dataUrl = "data:" + file.getContentType() + ";base64," + base64;
+            user.setProfileImage(dataUrl);
+        } catch (IOException e) {
+            throw new RuntimeException("Errore lettura immagine");
         }
 
         userRepo.save(user);

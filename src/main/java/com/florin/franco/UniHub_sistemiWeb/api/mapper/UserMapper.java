@@ -71,6 +71,7 @@ public class UserMapper {
                 universitaId,
                 dipartimentoId,
                 u.isEmailNotificationsEnabled(),
+                u.getProfileImage(),
                 university,
                 faculty,
                 followerCount,

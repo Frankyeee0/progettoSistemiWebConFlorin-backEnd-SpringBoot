@@ -59,6 +59,10 @@ public class AppUser {
     @Column(nullable = false)
     private boolean emailNotificationsEnabled = true;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String profileImage;
+
    
 
     @ManyToOne

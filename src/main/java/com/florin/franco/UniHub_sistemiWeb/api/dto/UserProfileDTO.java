@@ -17,6 +17,7 @@ public class UserProfileDTO {
     private Long universitaId;
     private Long dipartimentoId;
     private boolean emailNotificationsEnabled;
+    private String profileImage;
     private String university;
     private String faculty;
     private long followerCount;
