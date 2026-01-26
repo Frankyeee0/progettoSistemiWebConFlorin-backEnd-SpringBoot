@@ -95,9 +95,9 @@ public class ClubService {
 
 	        ClubDettaglioDto dto = modelMapper.map(club, ClubDettaglioDto.class);
 
-	        List<UserLiteDto> membriDto = club.getMembri().stream()
-	                .map(u -> new UserLiteDto(u.getId(), u.getUsername()))
-	                .toList();
+        List<UserLiteDto> membriDto = club.getMembri().stream()
+                .map(u -> new UserLiteDto(u.getId(), u.getUsername(), u.getProfileImage()))
+                .toList();
 
 	        dto.setMembri(membriDto);
 

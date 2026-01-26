@@ -122,7 +122,8 @@ public class CommentoService {
         if (entity.getAutore() != null) {
             dto.setAutore(new UserLiteDto(
                     entity.getAutore().getId(),
-                    entity.getAutore().getUsername()
+                    entity.getAutore().getUsername(),
+                    entity.getAutore().getProfileImage()
             ));
         }
  
@@ -141,7 +142,7 @@ public class CommentoService {
         List<Commento> commenti = commentoRepository.findByAutoreId(autoreId);
 
         return commenti.stream()
-                .map(c -> modelMapper.map(c, CommentoDto.class))
+                .map(this::mapToDto)
                 .collect(Collectors.toList());
     	}
 

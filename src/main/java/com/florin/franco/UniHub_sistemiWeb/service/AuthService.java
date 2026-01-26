@@ -56,6 +56,9 @@ public class AuthService {
         user.setRole(Ruolo.STUDENT);
         user.setDipartimento(dipartimento);
         user.setEmailNotificationsEnabled(true);
+        if (request.getProfileImage() != null && !request.getProfileImage().isBlank()) {
+            user.setProfileImage(request.getProfileImage());
+        }
 
         return userRepository.save(user);
     }

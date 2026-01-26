@@ -95,7 +95,7 @@ public class EventoService {
                 .addMappings(m -> m.skip(EventoDto::setIscritti));
 
         List<UserLiteDto> iscrittiDto = eventoAggiornato.getIscritti().stream()
-                .map(u -> new UserLiteDto(u.getId(), u.getUsername()))
+                .map(u -> new UserLiteDto(u.getId(), u.getUsername(), u.getProfileImage()))
                 .toList();
 
         dto.setIscritti(iscrittiDto);

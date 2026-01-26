@@ -12,5 +12,6 @@ public class UserLiteDto {
 
 	 private Long id;
 	 private String username;
+     private String profileImage;
 	 
 	}
