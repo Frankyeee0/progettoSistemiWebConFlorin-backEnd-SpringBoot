@@ -66,11 +66,11 @@ public class UniHubApplication {
 	            }
 
 	            // === 👤 UTENTI ===
-	            if (userRepo.count() == 0) {
-	                AppUser admin = new AppUser();
-	                admin.setName("System");
-	                admin.setSurname("Admin");
-	                admin.setStudentId("A000");
+            if (userRepo.count() == 0) {
+                AppUser admin = new AppUser();
+                admin.setName("System");
+                admin.setSurname("Admin");
+                admin.setStudentId("A000");
 	                admin.setUsername("admin");
 	                admin.setPassword(encoder.encode("1234"));
 	                admin.setEmail("admin@unihub.com");
@@ -103,7 +103,7 @@ public class UniHubApplication {
 	                luca.setEmail("luca@student.unibo.it");
 	                luca.setRole(Ruolo.STUDENT);
 
-	                userRepo.saveAll(List.of(admin, francisc, maria, luca));
+                userRepo.saveAll(List.of(admin, francisc, maria, luca));
 
 	                // Relazioni follow
 	                francisc.setSeguiti(Set.of(maria, luca));
@@ -112,8 +112,22 @@ public class UniHubApplication {
 
 	                userRepo.saveAll(List.of(francisc, maria, luca));
 
-	                System.out.println("✅ Utenti e relazioni follow creati.");
-	            }
+                System.out.println("✅ Utenti e relazioni follow creati.");
+            }
+
+            if (userRepo.findByUsername("superadmin").isEmpty()) {
+                AppUser superAdmin = new AppUser();
+                superAdmin.setName("Super");
+                superAdmin.setSurname("Admin");
+                superAdmin.setStudentId("A001");
+                superAdmin.setUsername("superadmin");
+                superAdmin.setPassword(encoder.encode("1234"));
+                superAdmin.setEmail("superadmin@unihub.com");
+                superAdmin.setRole(Ruolo.SUPERADMIN);
+                superAdmin.setEmailNotificationsEnabled(true);
+                userRepo.save(superAdmin);
+                System.out.println("✅ Super admin creato (superadmin/1234).");
+            }
 
 	            AppUser admin = userRepo.findByUsername("admin").get();
 	            AppUser francisc = userRepo.findByUsername("francisc").get();
@@ -192,5 +206,4 @@ public class UniHubApplication {
 	        };
 	    }
 	}
-
 
