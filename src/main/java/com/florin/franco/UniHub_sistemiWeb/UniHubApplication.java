@@ -16,6 +16,7 @@ import com.florin.franco.UniHub_sistemiWeb.entity.Commento;
 import com.florin.franco.UniHub_sistemiWeb.entity.Dipartimento;
 import com.florin.franco.UniHub_sistemiWeb.entity.Evento;
 import com.florin.franco.UniHub_sistemiWeb.entity.Feedback;
+import com.florin.franco.UniHub_sistemiWeb.entity.Report;
 import com.florin.franco.UniHub_sistemiWeb.entity.Universita;
 import com.florin.franco.UniHub_sistemiWeb.repository.FeedbackRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.AppUserRepository;
@@ -23,8 +24,11 @@ import com.florin.franco.UniHub_sistemiWeb.repository.ClubRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.CommentoRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.DipartimentoRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.EventoRepository;
+import com.florin.franco.UniHub_sistemiWeb.repository.ReportRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.UniversitaRepository;
 import com.florin.franco.UniHub_sistemiWeb.utils.Ruolo;
+import com.florin.franco.UniHub_sistemiWeb.utils.ReportStatus;
+import com.florin.franco.UniHub_sistemiWeb.utils.ReportTargetType;
 
 import jakarta.transaction.Transactional;
 
@@ -45,6 +49,7 @@ public class UniHubApplication {
 	            ClubRepository clubRepo,
 	            CommentoRepository commentoRepo,
 	            FeedbackRepository feedbackRepo,
+	            ReportRepository reportRepo,
 	            PasswordEncoder encoder
 	    ) {
 	        return args -> {
@@ -202,8 +207,40 @@ public class UniHubApplication {
 	                System.out.println("✅ Commenti e feedback creati.");
 	            }
 
+	            if (reportRepo.count() == 0) {
+	                Evento careerDay = eventoRepo.findAll().get(0);
+	                Commento commento = commentoRepo.findAll().get(0);
+	                Club club = clubRepo.findAll().get(0);
+
+	                Report r1 = new Report();
+	                r1.setTargetType(ReportTargetType.EVENT);
+	                r1.setTargetId(careerDay.getId());
+	                r1.setReporter(maria);
+	                r1.setReason("Contenuto non appropriato");
+	                r1.setDetails("Descrizione troppo generica");
+	                r1.setStatus(ReportStatus.NEW);
+
+	                Report r2 = new Report();
+	                r2.setTargetType(ReportTargetType.COMMENT);
+	                r2.setTargetId(commento.getId());
+	                r2.setReporter(luca);
+	                r2.setReason("Linguaggio offensivo");
+	                r2.setDetails("Commento con parole offensive");
+	                r2.setStatus(ReportStatus.NEW);
+
+	                Report r3 = new Report();
+	                r3.setTargetType(ReportTargetType.CLUB);
+	                r3.setTargetId(club.getId());
+	                r3.setReporter(francisc);
+	                r3.setReason("Spam");
+	                r3.setDetails("Club creato solo per pubblicita");
+	                r3.setStatus(ReportStatus.IN_REVIEW);
+
+	                reportRepo.saveAll(List.of(r1, r2, r3));
+	                System.out.println("✅ Segnalazioni create.");
+	            }
+
 	            System.out.println("\n🎯 Inizializzazione completata con successo ✅");
 	        };
 	    }
 	}
-
