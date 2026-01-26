@@ -120,6 +120,11 @@ public class EventoService {
                 .orElseThrow(() -> new RuntimeException("Evento non trovato"));
         EventoDto eventdtoDto= modelMapper.map(event,EventoDto.class);
 
+        List<UserLiteDto> iscrittiDto = event.getIscritti().stream()
+                .map(u -> new UserLiteDto(u.getId(), u.getUsername(), u.getProfileImage()))
+                .toList();
+        eventdtoDto.setIscritti(iscrittiDto);
+
         return eventdtoDto;}
 
     public EventoDettaglioDTO aggiornaEvento(Long eventoId, EventoUpdateDTO dto, Long editorId) {

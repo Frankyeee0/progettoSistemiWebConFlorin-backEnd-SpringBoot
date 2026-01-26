@@ -13,6 +13,8 @@ import jakarta.mail.internet.MimeMessage;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 
 
@@ -22,8 +24,11 @@ public class EmailService {
 	 	@Autowired
 	    private JavaMailSender mailSender;
 	
-	 	@Value("${app.mail.from}")
-	    private String fromEmail;
+	@Value("${app.mail.from}")
+	private String fromEmail;
+
+    @Value("${app.mail.admin:}")
+    private String adminEmail;
 	 	
 	 	
 	    public void sendEmail(String to, String subject, String text) {
@@ -49,22 +54,31 @@ public class EmailService {
 	    
     public void sendWelcomeEmail(String to, String nomeUtente) {
         try {
-	        	ClassPathResource resource = new ClassPathResource("templates/email-template.html");
-	        	
-	            try (InputStream inputStream = resource.getInputStream()) {
-	                String html = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        	ClassPathResource resource = new ClassPathResource("templates/email-template.html");
+        	
+            try (InputStream inputStream = resource.getInputStream()) {
+                String html = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+                String today = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm"));
 
-	                html = html
-	                        .replace("{{nomeUtente}}", nomeUtente)
-	                        .replace("{{linkLogin}}", "http://localhost:5173/login");
+                html = html
+                        .replace("{{nomeUtente}}", nomeUtente)
+                        .replace("{{linkLogin}}", "http://localhost:5173/login")
+                        .replace("{{dataInvio}}", today);
 
-	                sendHtmlEmail(to, "Benvenuto su UniHub", html);
-	                System.out.println("Email di benvenuto inviata a " + to);
-	            }
+                sendHtmlEmail(to, "Benvenuto su UniHub", html);
+                System.out.println("Email di benvenuto inviata a " + to);
+            }
 
 	        } catch (Exception e) {
             System.err.println("Errore durante l'invio dell'email di benvenuto: " + e.getMessage());
         }
+    }
+
+    public void sendSupportEmail(String name, String email, String subject, String message) {
+        String target = (adminEmail == null || adminEmail.isBlank()) ? fromEmail : adminEmail;
+        String safeSubject = (subject == null || subject.isBlank()) ? "Segnalazione UniHub" : subject;
+        String text = "Segnalazione da: " + name + " <" + email + ">\n\n" + message;
+        sendEmail(target, safeSubject, text);
     }
 
     public void sendNewEventEmail(String to, String creatorUsername, String eventTitle, String when, String where) {
