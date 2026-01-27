@@ -1,5 +1,6 @@
 package com.florin.franco.UniHub_sistemiWeb.controllers;
 
+import com.florin.franco.UniHub_sistemiWeb.api.dto.ResetPasswordRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -75,4 +76,14 @@ public class AuthController {
 	 	                .body("Errore durante il login: " + e.getMessage());
 	 	    }
 	 	}
+
+		@PostMapping("/reset-password")
+		public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+			try {
+				authService.resetPassword(request.getUsername(), request.getNewPassword());
+				return ResponseEntity.ok("Password aggiornata con successo!");
+			} catch (RuntimeException e) {
+				return ResponseEntity.badRequest().body("Errore: " + e.getMessage());
+			}
+		}
 	}

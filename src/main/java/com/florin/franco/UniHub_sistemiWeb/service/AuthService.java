@@ -67,6 +67,16 @@ public class AuthService {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));
     }
+    public void resetPassword(String username, String newPassword) {
+        AppUser user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+
+        // Codifica la nuova password
+        user.setPassword(passwordEncoder.encode(newPassword));
+
+        userRepository.save(user);
+    }
+
 
     public boolean checkPassword(String raw, String encoded) {
         return passwordEncoder.matches(raw, encoded);
