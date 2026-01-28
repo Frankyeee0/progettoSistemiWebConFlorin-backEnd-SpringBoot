@@ -64,6 +64,10 @@ public class ClubService {
 	        AppUser utente = userRepository.findById(utenteId)
 	                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
 
+	        if (club.isSuspended()) {
+	            throw new RuntimeException("Club sospeso");
+	        }
+
 	        if (club.getPostiDisponibili() <= 0) {
 	            throw new RuntimeException("Club pieno!");
 	        }
@@ -92,6 +96,10 @@ public class ClubService {
 	    public ClubDettaglioDto getClubDettaglio(Long id) {
 	        Club club = clubRepository.findById(id)
 	                .orElseThrow(() -> new RuntimeException("Club non trovato"));
+
+	        if (club.isSuspended()) {
+	            throw new RuntimeException("Club sospeso");
+	        }
 
 	        modelMapper.typeMap(Club.class, ClubDettaglioDto.class)
 	                .addMappings(m -> m.skip(ClubDettaglioDto::setMembri));
