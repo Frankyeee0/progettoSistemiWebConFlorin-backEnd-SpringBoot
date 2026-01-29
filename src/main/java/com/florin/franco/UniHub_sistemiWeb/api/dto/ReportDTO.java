@@ -18,4 +18,5 @@ public class ReportDTO {
     private String details;
     private LocalDateTime createdAt;
     private UserLiteDto reporter;
+    private Boolean targetSuspended;
 }
