@@ -7,6 +7,8 @@ import lombok.Data;
 public class EventoUpdateDTO {
     private String titolo;
     private String descrizione;
+    private String categoria;
+    private String universita;
     private String luogo;
     private LocalDateTime dataInizio;
     private LocalDateTime dataFine;

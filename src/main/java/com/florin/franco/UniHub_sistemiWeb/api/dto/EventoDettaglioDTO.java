@@ -12,6 +12,8 @@ public class EventoDettaglioDTO {
     private Long id;
     private String titolo;
     private String descrizione;
+    private String categoria;
+    private String universita;
     private LocalDateTime dataInizio;
     private LocalDateTime dataFine;
     private String luogo;
@@ -21,4 +23,3 @@ public class EventoDettaglioDTO {
     private CreatoreDTO creatore;
     private boolean userIscritto;
 }
-

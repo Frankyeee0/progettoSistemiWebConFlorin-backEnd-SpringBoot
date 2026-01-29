@@ -12,6 +12,8 @@ public class EventoDTO {
     private Long id;
     private String titolo;
     private String descrizione;
+    private String categoria;
+    private String universita;
     private String luogo;
     private LocalDateTime dataInizio;
 

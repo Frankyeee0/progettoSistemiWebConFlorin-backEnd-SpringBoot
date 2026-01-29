@@ -59,25 +59,24 @@ public class EmailService {
             }
         }
 	    
-	    public void sendHtmlEmail(String to, String subject, String htmlContent) throws MessagingException {
+	    public void sendHtmlEmail(String to, String subject, String htmlContent) {
             sendHtmlEmail(to, subject, htmlContent, "GENERIC");
         }
 
-        public void sendHtmlEmail(String to, String subject, String htmlContent, String type) throws MessagingException {
-	        MimeMessage message = mailSender.createMimeMessage();
-	        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-	        helper.setTo(to);
-	        helper.setSubject(subject);
-	        helper.setFrom(fromEmail);
-	        helper.setText(htmlContent, true); // true = interpreta HTML
-
+        public void sendHtmlEmail(String to, String subject, String htmlContent, String type) {
+            MimeMessage message = mailSender.createMimeMessage();
             try {
+                MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+                helper.setTo(to);
+                helper.setSubject(subject);
+                helper.setFrom(fromEmail);
+                helper.setText(htmlContent, true); // true = interpreta HTML
+
                 mailSender.send(message);
                 logEmail(to, subject, htmlContent, true, type, EmailStatus.SENT, null);
             } catch (MessagingException e) {
                 logEmail(to, subject, htmlContent, true, type, EmailStatus.FAILED, e.getMessage());
-                throw e;
+                throw new RuntimeException(e);
             } catch (RuntimeException e) {
                 logEmail(to, subject, htmlContent, true, type, EmailStatus.FAILED, e.getMessage());
                 throw e;

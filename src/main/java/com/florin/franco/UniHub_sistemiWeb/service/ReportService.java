@@ -124,6 +124,10 @@ public class ReportService {
         dto.setReason(report.getReason());
         dto.setDetails(report.getDetails());
         dto.setCreatedAt(report.getCreatedAt());
+        if (report.getTargetType() == ReportTargetType.EVENT && report.getTargetId() != null) {
+            eventoRepository.findById(report.getTargetId())
+                    .ifPresent(evento -> dto.setTargetHidden(evento.isHidden()));
+        }
         if (report.getTargetType() == ReportTargetType.CLUB && report.getTargetId() != null) {
             clubRepository.findById(report.getTargetId())
                     .ifPresent(club -> dto.setTargetSuspended(club.isSuspended()));

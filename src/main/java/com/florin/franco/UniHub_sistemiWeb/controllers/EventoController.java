@@ -39,8 +39,14 @@ public class EventoController {
     }
 
     @GetMapping
-    public List<EventoDto> getAllEvents() {
-        return eventoService.getAllEvents();
+    public List<EventoDto> getAllEvents(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String university,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate
+    ) {
+        return eventoService.getAllEvents(search, category, university, startDate, endDate);
     }
 
     @GetMapping("/{id}")

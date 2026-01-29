@@ -25,6 +25,8 @@ public class Evento {
     private String titolo;
 
     private String descrizione;
+    private String categoria;
+    private String universita;
     
     private LocalDateTime dataInizio;
     private LocalDateTime dataFine;

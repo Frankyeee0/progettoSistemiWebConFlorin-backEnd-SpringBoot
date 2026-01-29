@@ -14,6 +14,8 @@ public class EventoMapper {
                 e.getId(),
                 e.getTitolo(),
                 e.getDescrizione(),
+                e.getCategoria(),
+                e.getUniversita(),
                 e.getDataInizio(),
                 e.getDataFine(),
                 e.getLuogo(),
@@ -39,6 +41,8 @@ public class EventoMapper {
                 e.getId(),
                 e.getTitolo(),
                 e.getDescrizione(),
+                e.getCategoria(),
+                e.getUniversita(),
                 e.getDataInizio(),
                 e.getDataFine(),
                 e.getLuogo(),
@@ -57,6 +61,8 @@ public class EventoMapper {
         Evento evento = new Evento();
         evento.setTitolo(dto.getTitolo());
         evento.setDescrizione(dto.getDescrizione());
+        evento.setCategoria(dto.getCategoria());
+        evento.setUniversita(dto.getUniversita());
         evento.setLuogo(dto.getLuogo());
         evento.setDataInizio(dto.getDataInizio());
         evento.setDataFine(dto.getDataFine());

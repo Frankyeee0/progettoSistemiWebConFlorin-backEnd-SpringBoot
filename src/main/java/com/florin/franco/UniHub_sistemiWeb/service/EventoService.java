@@ -53,16 +53,26 @@ public class EventoService {
         return EventoMapper.toDTO(salvato);
     }
 
-    public List<EventoDto> getAllEvents() {
-    	List<Evento> listEventsEntity= eventoRepository.findAll()
+    public List<EventoDto> getAllEvents(String search, String category, String university, String start, String end) {
+        LocalDateTime startDate = parseDate(start);
+        LocalDateTime endDate = parseDate(end);
+        String searchLower = search == null ? "" : search.trim().toLowerCase();
+        String categoryLower = category == null ? "" : category.trim().toLowerCase();
+        String universityLower = university == null ? "" : university.trim().toLowerCase();
+
+        List<Evento> listEventsEntity = eventoRepository.findAll()
                 .stream()
                 .filter(e -> !e.isHidden())
+                .filter(e -> matchesSearch(e, searchLower))
+                .filter(e -> matchesCategory(e, categoryLower))
+                .filter(e -> matchesUniversity(e, universityLower))
+                .filter(e -> matchesDateRange(e, startDate, endDate))
                 .toList();
-    	List<EventoDto> listEventsDto = new ArrayList<EventoDto>();
-    	
-    	listEventsEntity.forEach(elem ->{
-    		listEventsDto.add(modelMapper.map(elem,EventoDto.class));
-    	});
+        List<EventoDto> listEventsDto = new ArrayList<>();
+
+        listEventsEntity.forEach(elem -> {
+            listEventsDto.add(modelMapper.map(elem, EventoDto.class));
+        });
         return listEventsDto;
     }
     
@@ -153,6 +163,12 @@ public class EventoService {
         if (dto.getDescrizione() != null) {
             evento.setDescrizione(dto.getDescrizione());
         }
+        if (dto.getCategoria() != null) {
+            evento.setCategoria(dto.getCategoria());
+        }
+        if (dto.getUniversita() != null) {
+            evento.setUniversita(dto.getUniversita());
+        }
         if (dto.getLuogo() != null) {
             evento.setLuogo(dto.getLuogo());
         }
@@ -198,6 +214,8 @@ public class EventoService {
         dto.setId(evento.getId());
         dto.setTitolo(evento.getTitolo());
         dto.setDescrizione(evento.getDescrizione());
+        dto.setCategoria(evento.getCategoria());
+        dto.setUniversita(evento.getUniversita());
         dto.setDataInizio(evento.getDataInizio());
         dto.setDataFine(evento.getDataFine());
         dto.setLuogo(evento.getLuogo());
@@ -216,6 +234,51 @@ public class EventoService {
         }
 
         return dto;
+    }
+
+    private boolean matchesSearch(Evento evento, String searchLower) {
+        if (searchLower == null || searchLower.isBlank()) return true;
+        String titolo = safeLower(evento.getTitolo());
+        String descrizione = safeLower(evento.getDescrizione());
+        String luogo = safeLower(evento.getLuogo());
+        return titolo.contains(searchLower) || descrizione.contains(searchLower) || luogo.contains(searchLower);
+    }
+
+    private boolean matchesCategory(Evento evento, String categoryLower) {
+        if (categoryLower == null || categoryLower.isBlank()) return true;
+        String categoria = safeLower(evento.getCategoria());
+        return categoria.equals(categoryLower);
+    }
+
+    private boolean matchesUniversity(Evento evento, String universityLower) {
+        if (universityLower == null || universityLower.isBlank()) return true;
+        String universita = safeLower(evento.getUniversita());
+        return universita.contains(universityLower);
+    }
+
+    private boolean matchesDateRange(Evento evento, LocalDateTime start, LocalDateTime end) {
+        if (start == null && end == null) return true;
+        LocalDateTime dataInizio = evento.getDataInizio();
+        if (dataInizio == null) return false;
+        if (start != null && dataInizio.isBefore(start)) return false;
+        if (end != null && dataInizio.isAfter(end)) return false;
+        return true;
+    }
+
+    private LocalDateTime parseDate(String raw) {
+        if (raw == null || raw.isBlank()) return null;
+        try {
+            if (raw.endsWith("Z") || raw.contains("+")) {
+                return java.time.OffsetDateTime.parse(raw).toLocalDateTime();
+            }
+            return LocalDateTime.parse(raw);
+        } catch (RuntimeException e) {
+            return null;
+        }
+    }
+
+    private String safeLower(String value) {
+        return value == null ? "" : value.toLowerCase();
     }
 
     private void notifyFollowersNewEvent(Evento evento) {

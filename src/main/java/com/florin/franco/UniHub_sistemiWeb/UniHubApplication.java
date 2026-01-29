@@ -193,6 +193,8 @@ public class UniHubApplication {
 	                Evento careerDay = new Evento();
 	                careerDay.setTitolo("Career Day UNIFE");
 	                careerDay.setDescrizione("Incontro con aziende e workshop di orientamento.");
+	                careerDay.setCategoria("carriera");
+	                careerDay.setUniversita("Università di Ferrara (UNIFE)");
 	                careerDay.setLuogo("Aula Magna, Ingegneria");
 	                careerDay.setDataInizio(LocalDateTime.of(2025, 11, 15, 9, 0));
 	                careerDay.setDataFine(LocalDateTime.of(2025, 11, 15, 17, 0));
@@ -204,6 +206,8 @@ public class UniHubApplication {
 	                Evento hackathon = new Evento();
 	                hackathon.setTitolo("Hackathon AI 2025");
 	                hackathon.setDescrizione("48 ore di coding sull’Intelligenza Artificiale.");
+	                hackathon.setCategoria("accademico");
+	                hackathon.setUniversita("Università di Bologna (UNIBO)");
 	                hackathon.setLuogo("Laboratorio 2, Informatica");
 	                hackathon.setDataInizio(LocalDateTime.of(2025, 12, 10, 9, 0));
 	                hackathon.setDataFine(LocalDateTime.of(2025, 12, 12, 18, 0));
@@ -215,6 +219,8 @@ public class UniHubApplication {
 	                Evento welcomeWeek = new Evento();
 	                welcomeWeek.setTitolo("Welcome Week");
 	                welcomeWeek.setDescrizione("Settimana di orientamento per le matricole.");
+	                welcomeWeek.setCategoria("accademico");
+	                welcomeWeek.setUniversita("Università di Milano (UNIMI)");
 	                welcomeWeek.setLuogo("Campus UNIMI");
 	                welcomeWeek.setDataInizio(LocalDateTime.of(2025, 10, 1, 9, 0));
 	                welcomeWeek.setDataFine(LocalDateTime.of(2025, 10, 5, 18, 0));
@@ -226,6 +232,8 @@ public class UniHubApplication {
 	                Evento mathMeetup = new Evento();
 	                mathMeetup.setTitolo("Math Meetup");
 	                mathMeetup.setDescrizione("Seminari e talk di matematica applicata.");
+	                mathMeetup.setCategoria("accademico");
+	                mathMeetup.setUniversita("Università di Pisa (UNIPI)");
 	                mathMeetup.setLuogo("Aula 2, Matematica");
 	                mathMeetup.setDataInizio(LocalDateTime.of(2025, 11, 20, 15, 0));
 	                mathMeetup.setDataFine(LocalDateTime.of(2025, 11, 20, 19, 0));
@@ -237,6 +245,23 @@ public class UniHubApplication {
 	                eventoRepo.saveAll(List.of(careerDay, hackathon, welcomeWeek, mathMeetup));
 	                System.out.println("✅ Eventi creati.");
 	            }
+
+                var eventi = eventoRepo.findAll();
+                boolean updated = false;
+                for (Evento evento : eventi) {
+                    if (evento.getCategoria() == null || evento.getCategoria().isBlank()) {
+                        evento.setCategoria(guessCategoria(evento));
+                        updated = true;
+                    }
+                    if (evento.getUniversita() == null || evento.getUniversita().isBlank()) {
+                        evento.setUniversita(guessUniversita(evento));
+                        updated = true;
+                    }
+                }
+                if (updated) {
+                    eventoRepo.saveAll(eventi);
+                    System.out.println("✅ Eventi aggiornati con categoria/università.");
+                }
 
 	            // === 🏫 CLUB ===
 	            if (clubRepo.count() == 0) {
@@ -335,4 +360,30 @@ public class UniHubApplication {
 	            System.out.println("\n🎯 Inizializzazione completata con successo ✅");
 	        };
 	    }
-	}
+
+    private static String guessCategoria(Evento evento) {
+        String text = ((evento.getTitolo() == null ? "" : evento.getTitolo()) + " " +
+                (evento.getDescrizione() == null ? "" : evento.getDescrizione()) + " " +
+                (evento.getLuogo() == null ? "" : evento.getLuogo())).toLowerCase();
+        if (text.contains("sport")) return "sport";
+        if (text.contains("volontariat")) return "volontariato";
+        if (text.contains("musica") || text.contains("concerto") || text.contains("cultura")) return "cultura";
+        if (text.contains("career") || text.contains("job") || text.contains("lavoro")) return "carriera";
+        return "accademico";
+    }
+
+    private static String guessUniversita(Evento evento) {
+        String text = ((evento.getTitolo() == null ? "" : evento.getTitolo()) + " " +
+                (evento.getLuogo() == null ? "" : evento.getLuogo())).toLowerCase();
+        if (text.contains("unife")) return "Università di Ferrara (UNIFE)";
+        if (text.contains("unibo")) return "Università di Bologna (UNIBO)";
+        if (text.contains("unimi")) return "Università di Milano (UNIMI)";
+        if (text.contains("unipi")) return "Università di Pisa (UNIPI)";
+        if (evento.getCreatore() != null &&
+                evento.getCreatore().getDipartimento() != null &&
+                evento.getCreatore().getDipartimento().getUniversita() != null) {
+            return evento.getCreatore().getDipartimento().getUniversita().getNome();
+        }
+        return "Università di Ferrara (UNIFE)";
+    }
+}

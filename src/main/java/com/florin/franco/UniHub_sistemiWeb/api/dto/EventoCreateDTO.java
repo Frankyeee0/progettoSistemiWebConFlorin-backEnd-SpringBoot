@@ -7,10 +7,11 @@ import lombok.Data;
 public class EventoCreateDTO {
     private String titolo;
     private String descrizione;
+    private String categoria;
+    private String universita;
     private String luogo;
     private LocalDateTime dataInizio;
     private LocalDateTime dataFine;
     private int postiTotali;
     private LocalDateTime deadlineIscrizione;
 }
-

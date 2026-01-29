@@ -19,4 +19,5 @@ public class ReportDTO {
     private LocalDateTime createdAt;
     private UserLiteDto reporter;
     private Boolean targetSuspended;
+    private Boolean targetHidden;
 }

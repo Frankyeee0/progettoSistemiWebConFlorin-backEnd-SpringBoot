@@ -54,6 +54,8 @@ public class UserMapper {
                                 e.getId(),
                                 e.getTitolo(),
                                 e.getDescrizione(),
+                                e.getCategoria(),
+                                e.getUniversita(),
                                 e.getLuogo(),
                                 e.getDataInizio(),
                                 new CreatoreDTO(u.getId(), u.getUsername())
