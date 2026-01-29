@@ -8,8 +8,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import com.florin.franco.UniHub_sistemiWeb.entity.EmailLog;
-import com.florin.franco.UniHub_sistemiWeb.repository.EmailLogRepository;
+import com.florin.franco.UniHub_sistemiWeb.entity.EmailHistory;
+import com.florin.franco.UniHub_sistemiWeb.repository.EmailHistoryRepository;
 import com.florin.franco.UniHub_sistemiWeb.utils.EmailStatus;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -31,7 +31,7 @@ public class EmailService {
 	    private JavaMailSender mailSender;
 
         @Autowired
-        private EmailLogRepository emailLogRepository;
+        private EmailHistoryRepository emailHistoryRepository;
 	
 	@Value("${app.mail.from}")
 	private String fromEmail;
@@ -189,7 +189,7 @@ public class EmailService {
 
     private void logEmail(String to, String subject, String body, boolean html, String type, EmailStatus status, String error) {
         try {
-            EmailLog log = new EmailLog();
+            EmailHistory log = new EmailHistory();
             log.setToEmail(to);
             log.setFromEmail(fromEmail);
             log.setSubject(subject);
@@ -198,7 +198,7 @@ public class EmailService {
             log.setType(type == null || type.isBlank() ? "GENERIC" : type);
             log.setStatus(status);
             log.setErrorMessage(error);
-            emailLogRepository.save(log);
+            emailHistoryRepository.save(log);
         } catch (RuntimeException e) {
             System.err.println("Errore salvataggio log email: " + e.getMessage());
         }

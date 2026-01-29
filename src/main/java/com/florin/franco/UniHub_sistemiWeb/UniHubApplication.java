@@ -299,10 +299,10 @@ public class UniHubApplication {
 
 	            // === 💬 COMMENTI & ⭐ FEEDBACK ===
 	            if (commentoRepo.count() == 0 || feedbackRepo.count() == 0) {
-	                List<Evento> eventi = eventoRepo.findAll();
-	                Evento careerDay = eventi.get(0);
-	                Evento hackathon = eventi.get(1);
-	                Evento welcomeWeek = eventi.get(2);
+	                List<Evento> eventiSeed = eventoRepo.findAll();
+	                Evento careerDay = eventiSeed.get(0);
+	                Evento hackathon = eventiSeed.get(1);
+	                Evento welcomeWeek = eventiSeed.get(2);
 	                Club robotica = clubRepo.findAll().get(0);
 	                Club musica = clubRepo.findAll().get(2);
 
