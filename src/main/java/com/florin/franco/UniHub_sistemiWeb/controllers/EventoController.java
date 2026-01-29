@@ -1,5 +1,6 @@
 package com.florin.franco.UniHub_sistemiWeb.controllers;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoCreateDTO;
@@ -9,6 +10,7 @@ import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoUpdateDTO;
 import com.florin.franco.UniHub_sistemiWeb.entity.AppUser;
 import com.florin.franco.UniHub_sistemiWeb.repository.AppUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.florin.franco.UniHub_sistemiWeb.dto.EventoDto;
@@ -41,6 +43,16 @@ public class EventoController {
     @GetMapping
     public List<EventoDto> getAllEvents() {
         return eventoService.getAllEvents();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> search(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to
+    ) {
+        System.out.println("FROM = " + from + " | TO = " + to + " | search=" + search);
+        return ResponseEntity.ok(eventoService.searchEvents(search, from, to));
     }
 
     @GetMapping("/{id}")

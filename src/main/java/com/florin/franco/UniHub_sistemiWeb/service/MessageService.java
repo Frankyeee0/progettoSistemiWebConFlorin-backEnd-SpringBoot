@@ -6,9 +6,11 @@ import com.florin.franco.UniHub_sistemiWeb.entity.AppUser;
 import com.florin.franco.UniHub_sistemiWeb.entity.Message;
 import com.florin.franco.UniHub_sistemiWeb.repository.AppUserRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.MessageRepository;
+import com.florin.franco.UniHub_sistemiWeb.utils.Ruolo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,5 +65,30 @@ public class MessageService {
         msg.setStatus(Message.Status.READ);
         Message updated = messageRepository.save(msg);
         return new MessageResponse(updated);
+    }
+    public void broadcastMessage(Long senderId, String content, Ruolo onlyRoleOrNull) {
+        AppUser sender = userRepository.findById(senderId)
+                .orElseThrow(() -> new RuntimeException("Mittente non trovato"));
+
+        List<AppUser> receivers = (onlyRoleOrNull == null)
+                ? userRepository.findAll()
+                : userRepository.findByRole(onlyRoleOrNull);
+
+        // non mandarlo a se stesso
+        receivers = receivers.stream()
+                .filter(u -> !u.getId().equals(senderId))
+                .toList();
+
+        List<Message> msgs = new ArrayList<>(receivers.size());
+        for (AppUser r : receivers) {
+            Message m = new Message();
+            m.setSender(sender);
+            m.setReceiver(r);
+            m.setContent(content);
+            m.setStatus(Message.Status.SENT);
+            msgs.add(m);
+        }
+
+        messageRepository.saveAll(msgs);
     }
 }
