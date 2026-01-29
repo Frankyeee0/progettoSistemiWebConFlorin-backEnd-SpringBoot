@@ -30,13 +30,16 @@ public class EventoService {
 
     @Autowired
     private AppUserRepository userRepository;
+
+    @Autowired
+    private MessageService messageService;
     
     @Autowired
     ModelMapper modelMapper;
 
     @Autowired
     private EmailService emailService;
-   
+
 
     public EventoDettaglioDTO creaEvento(EventoCreateDTO dto, Long creatoreId) {
         AppUser creatore = userRepository.findById(creatoreId)
@@ -45,12 +48,26 @@ public class EventoService {
         if (creatore.getRole() != Ruolo.ADMIN && creatore.getRole() != Ruolo.SUPERADMIN) {
             throw new RuntimeException("Solo gli admin possono creare eventi!");
         }
+
         Evento evento = EventoMapper.fromCreateDTO(dto);
         evento.setCreatore(creatore);
 
         Evento salvato = eventoRepository.save(evento);
+
         notifyFollowersNewEvent(salvato);
+
+        String msg = "📢 Nuovo evento: " + salvato.getTitolo()
+                + " | " + formatDate(salvato.getDataInizio())
+                + (salvato.getLuogo() != null ? " | " + salvato.getLuogo() : "");
+        messageService.broadcastMessage(creatore.getId(), msg, Ruolo.STUDENT); // solo studenti
+
         return EventoMapper.toDTO(salvato);
+    }
+    public List<EventoDto> searchEvents(String search, LocalDateTime from, LocalDateTime to) {
+        return eventoRepository.searchEvents(search, from, to)
+                .stream()
+                .map(e -> modelMapper.map(e, EventoDto.class))
+                .toList();
     }
 
     public List<EventoDto> getAllEvents(String search, String category, String university, String start, String end) {

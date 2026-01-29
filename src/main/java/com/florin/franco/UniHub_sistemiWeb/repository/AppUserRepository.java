@@ -1,8 +1,10 @@
 package com.florin.franco.UniHub_sistemiWeb.repository;
 
+import com.florin.franco.UniHub_sistemiWeb.utils.Ruolo;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,7 +20,7 @@ public interface AppUserRepository  extends JpaRepository
     Optional<AppUser> findByUsername(String username);
     Optional<AppUser> findByEmail(String email);
     Optional<AppUser> findByStudentId(String studentId);
-
+    List<AppUser> findByRole(Ruolo role);
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
     boolean existsByStudentId(String studentId);
