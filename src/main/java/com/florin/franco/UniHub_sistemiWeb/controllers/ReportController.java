@@ -32,12 +32,11 @@ public class ReportController {
 
     @GetMapping
     public ResponseEntity<?> list(
-            @RequestParam Long actorId,
             @RequestParam(required = false) ReportStatus status,
             @RequestParam(required = false) ReportTargetType type
     ) {
         try {
-            requireSuperAdmin(actorId);
+            requireSuperAdmin(1L);
             return ResponseEntity.ok(reportService.listReports(status, type));
         } catch (RuntimeException e) {
             if (e instanceof org.springframework.web.server.ResponseStatusException) {
@@ -48,9 +47,9 @@ public class ReportController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updateStatus(@PathVariable Long id, @RequestParam Long actorId, @RequestBody ReportUpdateRequest request) {
+    public ResponseEntity<?> updateStatus(@PathVariable Long id, @RequestBody ReportUpdateRequest request) {
         try {
-            requireSuperAdmin(actorId);
+            requireSuperAdmin(1L);
             return ResponseEntity.ok(reportService.updateStatus(id, request));
         } catch (RuntimeException e) {
             if (e instanceof org.springframework.web.server.ResponseStatusException) {

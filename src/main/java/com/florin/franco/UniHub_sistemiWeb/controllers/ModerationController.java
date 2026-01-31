@@ -48,8 +48,8 @@ public class ModerationController {
     }
 
     @PostMapping("/events/{id}/hide")
-    public ResponseEntity<?> hideEvent(@PathVariable Long id, @RequestParam Long actorId) {
-        AppUser actor = requireSuperAdmin(actorId);
+    public ResponseEntity<?> hideEvent(@PathVariable Long id) {
+        AppUser actor = requireSuperAdmin(1L);
         Evento evento = eventoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Evento non trovato"));
         evento.setHidden(true);
