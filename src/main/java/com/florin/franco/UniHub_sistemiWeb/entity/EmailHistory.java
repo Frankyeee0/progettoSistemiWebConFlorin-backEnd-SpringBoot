@@ -34,7 +34,7 @@ public class EmailHistory {
     @Column(nullable = false)
     private String subject;
 
-    @Lob
+    @Column(columnDefinition = "text")
     private String body;
 
     @Column(nullable = false)
@@ -47,7 +47,7 @@ public class EmailHistory {
     @Column(nullable = false)
     private EmailStatus status;
 
-    @Lob
+    @Column(columnDefinition = "text")
     private String errorMessage;
 
     @Column(nullable = false)

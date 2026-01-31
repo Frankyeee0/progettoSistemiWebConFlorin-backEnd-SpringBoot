@@ -17,7 +17,7 @@ import com.florin.franco.UniHub_sistemiWeb.utils.EmailStatus;
 import com.florin.franco.UniHub_sistemiWeb.utils.Ruolo;
 
 @RestController
-@RequestMapping({"/api/email-logs", "/api/email-history"})
+@RequestMapping("/api/email-logs")
 public class EmailHistoryController {
 
     @Autowired
@@ -27,10 +27,9 @@ public class EmailHistoryController {
 
     @GetMapping
     public ResponseEntity<List<EmailHistory>> list(
-            @RequestParam Long actorId,
             @RequestParam(required = false) EmailStatus status,
             @RequestParam(required = false) String type) {
-        AppUser actor = requireSuperAdmin(actorId);
+        //AppUser actor = requireSuperAdmin(1L);
         if (status != null && type != null) {
             return ResponseEntity.ok(emailHistoryRepository.findTop200ByStatusAndTypeOrderByCreatedAtDesc(status, type));
         }
