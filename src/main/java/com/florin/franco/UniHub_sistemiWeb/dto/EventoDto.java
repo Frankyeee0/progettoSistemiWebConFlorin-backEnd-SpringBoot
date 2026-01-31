@@ -8,6 +8,7 @@ import java.util.Set;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+@Deprecated
 @Data
 @JsonInclude(Include.NON_NULL)
 public class EventoDto {

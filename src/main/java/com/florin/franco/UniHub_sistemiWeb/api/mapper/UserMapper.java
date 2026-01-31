@@ -1,7 +1,7 @@
 package com.florin.franco.UniHub_sistemiWeb.api.mapper;
 
 import com.florin.franco.UniHub_sistemiWeb.api.dto.CreatoreDTO;
-import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoDTO;
+import com.florin.franco.UniHub_sistemiWeb.api.dto.EventListDTO;
 import com.florin.franco.UniHub_sistemiWeb.api.dto.UserCardDTO;
 import com.florin.franco.UniHub_sistemiWeb.api.dto.UserProfileDTO;
 import com.florin.franco.UniHub_sistemiWeb.entity.AppUser;
@@ -48,9 +48,9 @@ public class UserMapper {
             }
         }
 
-        List<EventoDTO> ev = (recent == null || recent.isEmpty()) ? List.of() :
+        List<EventListDTO> ev = (recent == null || recent.isEmpty()) ? List.of() :
                 recent.stream()
-                        .map(e -> new EventoDTO(
+                        .map(e -> new EventListDTO(
                                 e.getId(),
                                 e.getTitolo(),
                                 e.getDescrizione(),

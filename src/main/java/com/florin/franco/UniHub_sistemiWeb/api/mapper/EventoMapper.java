@@ -1,16 +1,21 @@
 package com.florin.franco.UniHub_sistemiWeb.api.mapper;
 
-import com.florin.franco.UniHub_sistemiWeb.api.dto.*;
+import com.florin.franco.UniHub_sistemiWeb.api.dto.CreatoreDTO;
+import com.florin.franco.UniHub_sistemiWeb.api.dto.EventDetailDTO;
+import com.florin.franco.UniHub_sistemiWeb.api.dto.EventListDTO;
+import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoCreateDTO;
 import com.florin.franco.UniHub_sistemiWeb.entity.Evento;
 import com.florin.franco.UniHub_sistemiWeb.entity.AppUser;
+import com.florin.franco.UniHub_sistemiWeb.dto.UserLiteDto;
+import java.util.List;
 
 public class EventoMapper {
 
     // 🔹 Versione base: senza username (es. dopo creazione evento)
-    public static EventoDettaglioDTO toDTO(Evento e) {
+    public static EventDetailDTO toDetailDTO(Evento e, boolean userIscritto, List<UserLiteDto> iscritti) {
         if (e == null) return null;
 
-        return new EventoDettaglioDTO(
+        return new EventDetailDTO(
                 e.getId(),
                 e.getTitolo(),
                 e.getDescrizione(),
@@ -23,34 +28,22 @@ public class EventoMapper {
                 e.getPostiDisponibili(),
                 e.getDeadlineIscrizione(),
                 toCreatoreDTO(e.getCreatore()),
-                false 
+                userIscritto,
+                iscritti
         );
     }
 
-    // 🔹 Versione con username: usata nel getEvento(id, username)
-    public static EventoDettaglioDTO toDTO(Evento e, String username) {
+    public static EventListDTO toListDTO(Evento e) {
         if (e == null) return null;
-
-        boolean isUserIscritto = false;
-        if (username != null && e.getIscritti() != null) {
-            isUserIscritto = e.getIscritti().stream()
-                    .anyMatch(u -> u.getUsername().equals(username));
-        }
-
-        return new EventoDettaglioDTO(
+        return new EventListDTO(
                 e.getId(),
                 e.getTitolo(),
                 e.getDescrizione(),
                 e.getCategoria(),
                 e.getUniversita(),
-                e.getDataInizio(),
-                e.getDataFine(),
                 e.getLuogo(),
-                e.getPostiTotali(),
-                e.getPostiDisponibili(),
-                e.getDeadlineIscrizione(),
-                toCreatoreDTO(e.getCreatore()),
-                isUserIscritto
+                e.getDataInizio(),
+                toCreatoreDTO(e.getCreatore())
         );
     }
 

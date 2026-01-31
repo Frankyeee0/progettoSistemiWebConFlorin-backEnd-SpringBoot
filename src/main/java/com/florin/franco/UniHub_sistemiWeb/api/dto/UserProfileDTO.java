@@ -23,5 +23,5 @@ public class UserProfileDTO {
     private long followerCount;
     private long followingCount;
     private boolean following;
-    private List<EventoDTO> recentEvents; 
+    private List<EventListDTO> recentEvents; 
 }

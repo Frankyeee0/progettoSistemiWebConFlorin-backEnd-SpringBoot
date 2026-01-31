@@ -8,8 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Deprecated
-public class EventoDTO {
+public class EventListDTO {
     private Long id;
     private String titolo;
     private String descrizione;
@@ -17,6 +16,5 @@ public class EventoDTO {
     private String universita;
     private String luogo;
     private LocalDateTime dataInizio;
-
-    private CreatoreDTO creatore; // nested DTO
+    private CreatoreDTO creatore;
 }

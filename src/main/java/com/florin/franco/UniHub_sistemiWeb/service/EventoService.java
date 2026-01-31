@@ -1,20 +1,16 @@
 package com.florin.franco.UniHub_sistemiWeb.service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.modelmapper.ModelMapper;
-import com.florin.franco.UniHub_sistemiWeb.api.dto.CreatoreDTO;
+import com.florin.franco.UniHub_sistemiWeb.api.dto.EventDetailDTO;
+import com.florin.franco.UniHub_sistemiWeb.api.dto.EventListDTO;
 import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoCreateDTO;
-import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoDTO;
-import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoDettaglioDTO;
 import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoUpdateDTO;
 import com.florin.franco.UniHub_sistemiWeb.api.mapper.EventoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.florin.franco.UniHub_sistemiWeb.dto.EventoDto;
 import com.florin.franco.UniHub_sistemiWeb.dto.UserLiteDto;
 import com.florin.franco.UniHub_sistemiWeb.entity.AppUser;
 import com.florin.franco.UniHub_sistemiWeb.entity.Evento;
@@ -35,13 +31,10 @@ public class EventoService {
     private MessageService messageService;
     
     @Autowired
-    ModelMapper modelMapper;
-
-    @Autowired
     private EmailService emailService;
 
 
-    public EventoDettaglioDTO creaEvento(EventoCreateDTO dto, Long creatoreId) {
+    public EventDetailDTO creaEvento(EventoCreateDTO dto, Long creatoreId) {
         AppUser creatore = userRepository.findById(creatoreId)
                 .orElseThrow(() -> new RuntimeException("Creatore non trovato"));
 
@@ -61,16 +54,19 @@ public class EventoService {
                 + (salvato.getLuogo() != null ? " | " + salvato.getLuogo() : "");
         messageService.broadcastMessage(creatore.getId(), msg, Ruolo.STUDENT); // solo studenti
 
-        return EventoMapper.toDTO(salvato);
+        List<UserLiteDto> iscrittiDto = salvato.getIscritti().stream()
+                .map(u -> new UserLiteDto(u.getId(), u.getUsername(), u.getProfileImage()))
+                .toList();
+        return EventoMapper.toDetailDTO(salvato, false, iscrittiDto);
     }
-    public List<EventoDto> searchEvents(String search, LocalDateTime from, LocalDateTime to) {
+    public List<EventListDTO> searchEvents(String search, LocalDateTime from, LocalDateTime to) {
         return eventoRepository.searchEvents(search, from, to)
                 .stream()
-                .map(e -> modelMapper.map(e, EventoDto.class))
+                .map(EventoMapper::toListDTO)
                 .toList();
     }
 
-    public List<EventoDto> getAllEvents(String search, String category, String university, String start, String end) {
+    public List<EventListDTO> getAllEvents(String search, String category, String university, String start, String end) {
         LocalDateTime startDate = parseDate(start);
         LocalDateTime endDate = parseDate(end);
         String searchLower = search == null ? "" : search.trim().toLowerCase();
@@ -85,15 +81,12 @@ public class EventoService {
                 .filter(e -> matchesUniversity(e, universityLower))
                 .filter(e -> matchesDateRange(e, startDate, endDate))
                 .toList();
-        List<EventoDto> listEventsDto = new ArrayList<>();
-
-        listEventsEntity.forEach(elem -> {
-            listEventsDto.add(modelMapper.map(elem, EventoDto.class));
-        });
-        return listEventsDto;
+        return listEventsEntity.stream()
+                .map(EventoMapper::toListDTO)
+                .toList();
     }
     
-    public EventoDto iscriviStudente(Long eventoId, Long studenteId) {
+    public EventDetailDTO iscriviStudente(Long eventoId, Long studenteId) {
         Evento evento = eventoRepository.findById(eventoId)
                 .orElseThrow(() -> new RuntimeException("Evento non trovato"));
         AppUser studente = userRepository.findById(studenteId)
@@ -119,19 +112,12 @@ public class EventoService {
         evento.getIscritti().add(studente);
         Evento eventoAggiornato = eventoRepository.save(evento);
 
-        EventoDto dto = modelMapper.map(eventoAggiornato, EventoDto.class);
-
-        modelMapper.typeMap(Evento.class, EventoDto.class)
-                .addMappings(m -> m.skip(EventoDto::setIscritti));
-
         List<UserLiteDto> iscrittiDto = eventoAggiornato.getIscritti().stream()
                 .map(u -> new UserLiteDto(u.getId(), u.getUsername(), u.getProfileImage()))
                 .toList();
 
-        dto.setIscritti(iscrittiDto);
-
         notifySignup(evento, studente);
-        return dto;
+        return EventoMapper.toDetailDTO(eventoAggiornato, true, iscrittiDto);
     }
 
     public Evento disiscriviStudente(Long eventoId, Long studenteId) {
@@ -144,22 +130,17 @@ public class EventoService {
         return eventoRepository.save(evento);
     }
     
-    public EventoDto getEventDetails(Long id) {
+    public EventDetailDTO getEventDetails(Long id) {
     	
         Evento event = eventoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Evento non trovato"));
-        EventoDto eventdtoDto= modelMapper.map(event,EventoDto.class);
-        eventdtoDto.setPostiDisponibili(event.getPostiDisponibili());
-        eventdtoDto.setDataFine(event.getDataFine());
-
         List<UserLiteDto> iscrittiDto = event.getIscritti().stream()
                 .map(u -> new UserLiteDto(u.getId(), u.getUsername(), u.getProfileImage()))
                 .toList();
-        eventdtoDto.setIscritti(iscrittiDto);
+        return EventoMapper.toDetailDTO(event, false, iscrittiDto);
+    }
 
-        return eventdtoDto;}
-
-    public EventoDettaglioDTO aggiornaEvento(Long eventoId, EventoUpdateDTO dto, Long editorId) {
+    public EventDetailDTO aggiornaEvento(Long eventoId, EventoUpdateDTO dto, Long editorId) {
         Evento evento = eventoRepository.findById(eventoId)
                 .orElseThrow(() -> new RuntimeException("Evento non trovato"));
 
@@ -210,10 +191,13 @@ public class EventoService {
             notifyEventUpdate(salvato);
         }
 
-        return EventoMapper.toDTO(salvato);
+        List<UserLiteDto> iscrittiDto = salvato.getIscritti().stream()
+                .map(u -> new UserLiteDto(u.getId(), u.getUsername(), u.getProfileImage()))
+                .toList();
+        return EventoMapper.toDetailDTO(salvato, false, iscrittiDto);
     }
 
-    public EventoDettaglioDTO getEventoDettaglio(Long eventoId, Long userId) {
+    public EventDetailDTO getEventoDettaglio(Long eventoId, Long userId) {
         Evento evento = eventoRepository.findById(eventoId)
                 .orElseThrow(() -> new RuntimeException("Evento non trovato"));
 
@@ -226,31 +210,11 @@ public class EventoService {
         return toDettaglioDTO(evento, userIscritto);
     }
 
-    private EventoDettaglioDTO toDettaglioDTO(Evento evento, boolean userIscritto) {
-        EventoDettaglioDTO dto = new EventoDettaglioDTO();
-        dto.setId(evento.getId());
-        dto.setTitolo(evento.getTitolo());
-        dto.setDescrizione(evento.getDescrizione());
-        dto.setCategoria(evento.getCategoria());
-        dto.setUniversita(evento.getUniversita());
-        dto.setDataInizio(evento.getDataInizio());
-        dto.setDataFine(evento.getDataFine());
-        dto.setLuogo(evento.getLuogo());
-        dto.setPostiTotali(evento.getPostiTotali());
-        dto.setPostiDisponibili(evento.getPostiDisponibili());
-        dto.setDeadlineIscrizione(evento.getDeadlineIscrizione());
-        dto.setUserIscritto(userIscritto);
-
-        var creatore = evento.getCreatore();
-        if (creatore != null) {
-            dto.setCreatore(new CreatoreDTO(
-                    creatore.getId(),
-                    creatore.getUsername()
-                  
-            ));
-        }
-
-        return dto;
+    private EventDetailDTO toDettaglioDTO(Evento evento, boolean userIscritto) {
+        List<UserLiteDto> iscrittiDto = evento.getIscritti().stream()
+                .map(u -> new UserLiteDto(u.getId(), u.getUsername(), u.getProfileImage()))
+                .toList();
+        return EventoMapper.toDetailDTO(evento, userIscritto, iscrittiDto);
     }
 
     private boolean matchesSearch(Evento evento, String searchLower) {

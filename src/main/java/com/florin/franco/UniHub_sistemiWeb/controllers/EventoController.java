@@ -3,9 +3,9 @@ package com.florin.franco.UniHub_sistemiWeb.controllers;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.florin.franco.UniHub_sistemiWeb.api.dto.EventDetailDTO;
+import com.florin.franco.UniHub_sistemiWeb.api.dto.EventListDTO;
 import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoCreateDTO;
-import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoDTO;
-import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoDettaglioDTO;
 import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoUpdateDTO;
 import com.florin.franco.UniHub_sistemiWeb.entity.AppUser;
 import com.florin.franco.UniHub_sistemiWeb.repository.AppUserRepository;
@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.florin.franco.UniHub_sistemiWeb.dto.EventoDto;
 import com.florin.franco.UniHub_sistemiWeb.entity.Evento;
 import com.florin.franco.UniHub_sistemiWeb.service.EventoService;
 
@@ -41,7 +40,7 @@ public class EventoController {
     }
 
     @GetMapping
-    public List<EventoDto> getAllEvents(
+    public List<EventListDTO> getAllEvents(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String university,
