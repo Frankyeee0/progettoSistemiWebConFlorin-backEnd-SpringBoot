@@ -181,6 +181,21 @@ public class UniHubApplication {
                 System.out.println("✅ Utenti e relazioni follow creati.");
             }
 
+            if (userRepo.findByUsername("admin").isEmpty()) {
+                AppUser adminUser = new AppUser();
+                adminUser.setName("System");
+                adminUser.setSurname("Admin");
+                adminUser.setStudentId("A000");
+                adminUser.setUsername("admin");
+                adminUser.setPassword(encoder.encode("admin123"));
+                adminUser.setEmail("admin@unihub.com");
+                adminUser.setRole(Ruolo.ADMIN);
+                adminUser.setEmailNotificationsEnabled(true);
+                adminUser.setDipartimento(dipByName.getOrDefault("Ingegneria", null));
+                userRepo.save(adminUser);
+                System.out.println("✅ Admin creato (admin/admin123).");
+            }
+
             if (userRepo.findByUsername("superadmin").isEmpty()) {
                 AppUser superAdmin = new AppUser();
                 superAdmin.setName("Super");
@@ -193,6 +208,21 @@ public class UniHubApplication {
                 superAdmin.setEmailNotificationsEnabled(true);
                 userRepo.save(superAdmin);
                 System.out.println("✅ Super admin creato (superadmin/1234).");
+            }
+
+            if (userRepo.findByUsername("user").isEmpty()) {
+                AppUser user = new AppUser();
+                user.setName("Test");
+                user.setSurname("User");
+                user.setStudentId("U001");
+                user.setUsername("user");
+                user.setPassword(encoder.encode("user123"));
+                user.setEmail("user@unihub.com");
+                user.setRole(Ruolo.USER);
+                user.setEmailNotificationsEnabled(true);
+                user.setDipartimento(dipByName.getOrDefault("Informatica", null));
+                userRepo.save(user);
+                System.out.println("✅ User creato (user/user123).");
             }
 
 	            AppUser admin = userRepo.findByUsername("admin").get();
