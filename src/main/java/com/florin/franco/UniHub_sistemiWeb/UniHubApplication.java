@@ -101,9 +101,9 @@ public class UniHubApplication {
                 admin.setName("System");
                 admin.setSurname("Admin");
                 admin.setStudentId("A000");
-	                admin.setUsername("admin");
-	                admin.setPassword(encoder.encode("1234"));
-	                admin.setEmail("admin@unihub.com");
+                admin.setUsername("admin");
+                admin.setPassword(encoder.encode("admin123"));
+                admin.setEmail("admin@unihub.com");
 	                admin.setRole(Ruolo.ADMIN);
                     admin.setDipartimento(dipByName.get("Ingegneria"));
 
