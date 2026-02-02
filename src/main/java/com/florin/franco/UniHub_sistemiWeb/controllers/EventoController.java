@@ -1,6 +1,5 @@
 package com.florin.franco.UniHub_sistemiWeb.controllers;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import com.florin.franco.UniHub_sistemiWeb.api.dto.EventDetailDTO;
@@ -10,7 +9,6 @@ import com.florin.franco.UniHub_sistemiWeb.api.dto.EventoUpdateDTO;
 import com.florin.franco.UniHub_sistemiWeb.entity.AppUser;
 import com.florin.franco.UniHub_sistemiWeb.repository.AppUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.florin.franco.UniHub_sistemiWeb.entity.Evento;
@@ -53,16 +51,20 @@ public class EventoController {
     @GetMapping("/search")
     public ResponseEntity<?> search(
             @RequestParam(required = false) String search,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String university,
+            @RequestParam(required = false) String from,
+            @RequestParam(required = false) String to
     ) {
-        System.out.println("FROM = " + from + " | TO = " + to + " | search=" + search);
-        return ResponseEntity.ok(eventoService.searchEvents(search, from, to));
+        return ResponseEntity.ok(eventoService.getAllEvents(search, category, university, from, to));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getEvent(@PathVariable Long id, @RequestParam(required = false) String username) {
+    public ResponseEntity<?> getEvent(@PathVariable Long id, @RequestParam(required = false) Long userId) {
         try {
+            if (userId != null) {
+                return ResponseEntity.ok(eventoService.getEventoDettaglio(id, userId));
+            }
             return ResponseEntity.ok(eventoService.getEventDetails(id));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body("Attenzione " + e.getMessage());

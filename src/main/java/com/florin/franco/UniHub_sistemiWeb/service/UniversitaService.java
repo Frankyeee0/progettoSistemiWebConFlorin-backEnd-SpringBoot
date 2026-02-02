@@ -59,4 +59,25 @@ public class UniversitaService {
 
 	        return dto;
 	    }
+
+	    public UniversitaDto createUniversita(String nome) {
+	        if (nome == null || nome.trim().isEmpty()) {
+	            throw new RuntimeException("Nome universita mancante");
+	        }
+	        String normalized = nome.trim();
+	        if (universitaRepository.existsByNomeIgnoreCase(normalized)) {
+	            throw new RuntimeException("Universita gia esistente");
+	        }
+	        Universita entity = new Universita();
+	        entity.setNome(normalized);
+	        Universita saved = universitaRepository.save(entity);
+	        return modelMapper.map(saved, UniversitaDto.class);
+	    }
+
+	    public void deleteUniversita(Long id) {
+	        if (id == null || !universitaRepository.existsById(id)) {
+	            throw new RuntimeException("Universita non trovata");
+	        }
+	        universitaRepository.deleteById(id);
+	    }
 	}

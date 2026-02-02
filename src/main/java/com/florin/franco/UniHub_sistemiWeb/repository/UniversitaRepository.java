@@ -14,4 +14,6 @@ public interface UniversitaRepository extends JpaRepository<Universita, Long> {
     Optional<Universita> findByNome(String nome);
 
     List<Universita> findByNomeContainingIgnoreCase(String parteNome);
+
+    boolean existsByNomeIgnoreCase(String nome);
 }

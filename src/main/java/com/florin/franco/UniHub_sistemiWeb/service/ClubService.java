@@ -32,7 +32,7 @@ public class ClubService {
 	        AppUser fondatore = userRepository.findById(fondatoreId)
 	                .orElseThrow(() -> new RuntimeException("Fondatore non trovato"));
 
-	        if (fondatore.getRole() != Ruolo.ADMIN && fondatore.getRole() != Ruolo.SUPERADMIN) {
+	        if (fondatore.getRole() != Ruolo.ADMIN) {
 	            throw new RuntimeException("Solo gli admin possono creare club!");
 	        }
 

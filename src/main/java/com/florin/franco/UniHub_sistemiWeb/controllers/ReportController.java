@@ -32,11 +32,12 @@ public class ReportController {
 
     @GetMapping
     public ResponseEntity<?> list(
+            @RequestParam(required = false) Long actorId,
             @RequestParam(required = false) ReportStatus status,
             @RequestParam(required = false) ReportTargetType type
     ) {
         try {
-            requireSuperAdmin(1L);
+            requireSuperAdmin(actorId);
             return ResponseEntity.ok(reportService.listReports(status, type));
         } catch (RuntimeException e) {
             if (e instanceof org.springframework.web.server.ResponseStatusException) {
@@ -47,9 +48,13 @@ public class ReportController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updateStatus(@PathVariable Long id, @RequestBody ReportUpdateRequest request) {
+    public ResponseEntity<?> updateStatus(
+            @PathVariable Long id,
+            @RequestParam(required = false) Long actorId,
+            @RequestBody ReportUpdateRequest request
+    ) {
         try {
-            requireSuperAdmin(1L);
+            requireSuperAdmin(actorId);
             return ResponseEntity.ok(reportService.updateStatus(id, request));
         } catch (RuntimeException e) {
             if (e instanceof org.springframework.web.server.ResponseStatusException) {
@@ -67,7 +72,7 @@ public class ReportController {
         AppUser user = userRepository.findById(actorId)
                 .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
                         org.springframework.http.HttpStatus.FORBIDDEN, "Permesso negato"));
-        if (user.getRole() != Ruolo.SUPERADMIN) {
+        if (user.getRole() != Ruolo.ADMIN) {
             throw new org.springframework.web.server.ResponseStatusException(
                     org.springframework.http.HttpStatus.FORBIDDEN, "Permesso negato");
         }

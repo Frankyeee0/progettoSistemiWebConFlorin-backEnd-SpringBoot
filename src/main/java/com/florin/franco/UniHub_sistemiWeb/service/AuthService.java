@@ -53,7 +53,7 @@ public class AuthService {
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword())); 
         user.setEmail(request.getEmail());
-        user.setRole(Ruolo.STUDENT);
+        user.setRole(Ruolo.USER);
         user.setDipartimento(dipartimento);
         user.setEmailNotificationsEnabled(true);
         if (request.getProfileImage() != null && !request.getProfileImage().isBlank()) {

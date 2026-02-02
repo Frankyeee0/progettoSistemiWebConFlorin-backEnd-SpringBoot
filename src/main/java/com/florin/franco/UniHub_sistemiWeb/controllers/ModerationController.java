@@ -48,8 +48,8 @@ public class ModerationController {
     }
 
     @PostMapping("/events/{id}/hide")
-    public ResponseEntity<?> hideEvent(@PathVariable Long id) {
-        AppUser actor = requireSuperAdmin(1L);
+    public ResponseEntity<?> hideEvent(@PathVariable Long id, @RequestParam Long actorId) {
+        AppUser actor = requireSuperAdmin(actorId);
         Evento evento = eventoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Evento non trovato"));
         evento.setHidden(true);
@@ -97,7 +97,7 @@ public class ModerationController {
         }
         AppUser user = userRepository.findById(actorId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Permesso negato"));
-        if (user.getRole() != Ruolo.SUPERADMIN) {
+        if (user.getRole() != Ruolo.ADMIN) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Permesso negato");
         }
         return user;

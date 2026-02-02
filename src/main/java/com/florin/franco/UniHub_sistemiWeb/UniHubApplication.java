@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.florin.franco.UniHub_sistemiWeb.entity.AppUser;
 import com.florin.franco.UniHub_sistemiWeb.entity.Club;
 import com.florin.franco.UniHub_sistemiWeb.entity.Commento;
+import com.florin.franco.UniHub_sistemiWeb.entity.CategoriaEvento;
 import com.florin.franco.UniHub_sistemiWeb.entity.Dipartimento;
 import com.florin.franco.UniHub_sistemiWeb.entity.Evento;
 import com.florin.franco.UniHub_sistemiWeb.entity.Feedback;
@@ -23,6 +24,7 @@ import com.florin.franco.UniHub_sistemiWeb.entity.Universita;
 import com.florin.franco.UniHub_sistemiWeb.repository.FeedbackRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.AppUserRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.ClubRepository;
+import com.florin.franco.UniHub_sistemiWeb.repository.CategoriaEventoRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.CommentoRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.DipartimentoRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.EventoRepository;
@@ -45,20 +47,21 @@ public class UniHubApplication {
 	    @Transactional
 	    CommandLineRunner initDatabase(
 	            UniversitaRepository universitaRepo,
-	            DipartimentoRepository dipartimentoRepo,
-	            AppUserRepository userRepo,
-	            EventoRepository eventoRepo,
-	            ClubRepository clubRepo,
-	            CommentoRepository commentoRepo,
-	            FeedbackRepository feedbackRepo,
-	            ReportRepository reportRepo,
-	            PasswordEncoder encoder
+            DipartimentoRepository dipartimentoRepo,
+            AppUserRepository userRepo,
+            EventoRepository eventoRepo,
+            ClubRepository clubRepo,
+            CommentoRepository commentoRepo,
+            CategoriaEventoRepository categoriaRepo,
+            FeedbackRepository feedbackRepo,
+            ReportRepository reportRepo,
+            PasswordEncoder encoder
 	    ) {
 	        return args -> {
 	            System.out.println("\n🚀 Inizializzazione dati UniHub...\n");
 
 	            // === 🎓 UNIVERSITÀ & DIPARTIMENTI ===
-	            if (universitaRepo.count() == 0) {
+            if (universitaRepo.count() == 0) {
 	                Universita unife = new Universita(null, "Università di Ferrara (UNIFE)", null);
 	                Universita unibo = new Universita(null, "Università di Bologna (UNIBO)", null);
 	                Universita unimi = new Universita(null, "Università di Milano (UNIMI)", null);
@@ -78,8 +81,19 @@ public class UniHubApplication {
 	                System.out.println("✅ Università e Dipartimenti creati.");
 	            }
 
-	            Map<String, Dipartimento> dipByName = new HashMap<>();
-	            dipartimentoRepo.findAll().forEach(d -> dipByName.put(d.getNome(), d));
+            Map<String, Dipartimento> dipByName = new HashMap<>();
+            dipartimentoRepo.findAll().forEach(d -> dipByName.put(d.getNome(), d));
+
+            if (categoriaRepo.count() == 0) {
+                List<String> defaults = List.of("accademico", "sport", "cultura", "carriera", "volontariato");
+                List<CategoriaEvento> items = defaults.stream().map(name -> {
+                    CategoriaEvento c = new CategoriaEvento();
+                    c.setNome(name);
+                    return c;
+                }).toList();
+                categoriaRepo.saveAll(items);
+                System.out.println("✅ Categorie evento create.");
+            }
 
 	            // === 👤 UTENTI ===
             if (userRepo.count() == 0) {
@@ -90,7 +104,7 @@ public class UniHubApplication {
 	                admin.setUsername("admin");
 	                admin.setPassword(encoder.encode("1234"));
 	                admin.setEmail("admin@unihub.com");
-	                admin.setRole(Ruolo.SUPERADMIN);
+	                admin.setRole(Ruolo.ADMIN);
                     admin.setDipartimento(dipByName.get("Ingegneria"));
 
                 AppUser planner = new AppUser();
@@ -100,7 +114,7 @@ public class UniHubApplication {
                 planner.setUsername("planner");
                 planner.setPassword(encoder.encode("1234"));
                 planner.setEmail("planner@unihub.com");
-                planner.setRole(Ruolo.PLANNER);
+                planner.setRole(Ruolo.USER);
                 planner.setDipartimento(dipByName.get("Economia"));
 
                 AppUser francisc = new AppUser();
@@ -110,7 +124,7 @@ public class UniHubApplication {
                 francisc.setUsername("francisc");
                 francisc.setPassword(encoder.encode("1234"));
                 francisc.setEmail("francisc@student.unife.it");
-                francisc.setRole(Ruolo.STUDENT);
+                francisc.setRole(Ruolo.USER);
                 francisc.setDipartimento(dipByName.get("Informatica"));
 
                 AppUser maria = new AppUser();
@@ -120,7 +134,7 @@ public class UniHubApplication {
                 maria.setUsername("maria");
                 maria.setPassword(encoder.encode("1234"));
                 maria.setEmail("maria@student.unibo.it");
-                maria.setRole(Ruolo.STUDENT);
+                maria.setRole(Ruolo.USER);
                 maria.setDipartimento(dipByName.get("Fisica"));
 
                 AppUser luca = new AppUser();
@@ -130,7 +144,7 @@ public class UniHubApplication {
                 luca.setUsername("luca");
                 luca.setPassword(encoder.encode("1234"));
                 luca.setEmail("luca@student.unibo.it");
-                luca.setRole(Ruolo.STUDENT);
+                luca.setRole(Ruolo.USER);
                 luca.setDipartimento(dipByName.get("Matematica"));
 
                 AppUser anna = new AppUser();
@@ -140,7 +154,7 @@ public class UniHubApplication {
                 anna.setUsername("anna");
                 anna.setPassword(encoder.encode("1234"));
                 anna.setEmail("anna@student.unimi.it");
-                anna.setRole(Ruolo.STUDENT);
+                anna.setRole(Ruolo.USER);
                 anna.setDipartimento(dipByName.get("Medicina"));
 
                 AppUser marco = new AppUser();
@@ -150,7 +164,7 @@ public class UniHubApplication {
                 marco.setUsername("marco");
                 marco.setPassword(encoder.encode("1234"));
                 marco.setEmail("marco@student.unipi.it");
-                marco.setRole(Ruolo.STUDENT);
+                marco.setRole(Ruolo.USER);
                 marco.setDipartimento(dipByName.get("Lettere"));
 
                 userRepo.saveAll(List.of(admin, planner, francisc, maria, luca, anna, marco));
@@ -175,7 +189,7 @@ public class UniHubApplication {
                 superAdmin.setUsername("superadmin");
                 superAdmin.setPassword(encoder.encode("1234"));
                 superAdmin.setEmail("superadmin@unihub.com");
-                superAdmin.setRole(Ruolo.SUPERADMIN);
+                superAdmin.setRole(Ruolo.ADMIN);
                 superAdmin.setEmailNotificationsEnabled(true);
                 userRepo.save(superAdmin);
                 System.out.println("✅ Super admin creato (superadmin/1234).");

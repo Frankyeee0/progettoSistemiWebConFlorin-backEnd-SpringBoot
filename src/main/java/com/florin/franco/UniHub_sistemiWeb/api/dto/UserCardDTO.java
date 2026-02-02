@@ -10,7 +10,7 @@ public class UserCardDTO {
     private String name;
     private String surname;
     private String username;
-    private String role;        // Ruolo come stringa (ADMIN/STUDENT/...)
+    private String role;        // Ruolo come stringa (ADMIN/USER/GUEST)
     private String faculty;     // Nome dipartimento se presente
     private boolean following;  // se l'utente corrente lo segue già
 }

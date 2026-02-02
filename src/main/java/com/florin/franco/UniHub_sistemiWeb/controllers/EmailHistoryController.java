@@ -17,7 +17,7 @@ import com.florin.franco.UniHub_sistemiWeb.utils.EmailStatus;
 import com.florin.franco.UniHub_sistemiWeb.utils.Ruolo;
 
 @RestController
-@RequestMapping("/api/email-logs")
+@RequestMapping({"/api/email-history", "/api/email-logs"})
 public class EmailHistoryController {
 
     @Autowired
@@ -27,9 +27,10 @@ public class EmailHistoryController {
 
     @GetMapping
     public ResponseEntity<List<EmailHistory>> list(
+            @RequestParam(required = false) Long actorId,
             @RequestParam(required = false) EmailStatus status,
             @RequestParam(required = false) String type) {
-        //AppUser actor = requireSuperAdmin(1L);
+        requireSuperAdmin(actorId);
         if (status != null && type != null) {
             return ResponseEntity.ok(emailHistoryRepository.findTop200ByStatusAndTypeOrderByCreatedAtDesc(status, type));
         }
@@ -50,7 +51,7 @@ public class EmailHistoryController {
         AppUser user = userRepository.findById(actorId)
                 .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
                         org.springframework.http.HttpStatus.FORBIDDEN, "Permesso negato"));
-        if (user.getRole() != Ruolo.SUPERADMIN) {
+        if (user.getRole() != Ruolo.ADMIN) {
             throw new org.springframework.web.server.ResponseStatusException(
                     org.springframework.http.HttpStatus.FORBIDDEN, "Permesso negato");
         }

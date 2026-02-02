@@ -38,12 +38,15 @@ public class EventoService {
         AppUser creatore = userRepository.findById(creatoreId)
                 .orElseThrow(() -> new RuntimeException("Creatore non trovato"));
 
-        if (creatore.getRole() != Ruolo.ADMIN && creatore.getRole() != Ruolo.SUPERADMIN) {
-            throw new RuntimeException("Solo gli admin possono creare eventi!");
+        if (creatore.getRole() != Ruolo.ADMIN && creatore.getRole() != Ruolo.USER) {
+            throw new RuntimeException("Solo gli utenti possono creare eventi!");
         }
 
         Evento evento = EventoMapper.fromCreateDTO(dto);
         evento.setCreatore(creatore);
+        if (creatore.getDipartimento() != null && creatore.getDipartimento().getUniversita() != null) {
+            evento.setUniversita(creatore.getDipartimento().getUniversita().getNome());
+        }
 
         Evento salvato = eventoRepository.save(evento);
 
@@ -52,7 +55,7 @@ public class EventoService {
         String msg = "📢 Nuovo evento: " + salvato.getTitolo()
                 + " | " + formatDate(salvato.getDataInizio())
                 + (salvato.getLuogo() != null ? " | " + salvato.getLuogo() : "");
-        messageService.broadcastMessage(creatore.getId(), msg, Ruolo.STUDENT); // solo studenti
+        messageService.broadcastMessage(creatore.getId(), msg, Ruolo.USER); // solo utenti
 
         List<UserLiteDto> iscrittiDto = salvato.getIscritti().stream()
                 .map(u -> new UserLiteDto(u.getId(), u.getUsername(), u.getProfileImage()))
@@ -92,8 +95,8 @@ public class EventoService {
         AppUser studente = userRepository.findById(studenteId)
                 .orElseThrow(() -> new RuntimeException("Studente non trovato"));
 
-        if (studente.getRole() != Ruolo.STUDENT) {
-            throw new RuntimeException("Solo gli studenti possono iscriversi agli eventi!");
+        if (studente.getRole() != Ruolo.USER) {
+            throw new RuntimeException("Solo gli utenti possono iscriversi agli eventi!");
         }
 
         if (evento.getDeadlineIscrizione() != null &&
@@ -120,14 +123,19 @@ public class EventoService {
         return EventoMapper.toDetailDTO(eventoAggiornato, true, iscrittiDto);
     }
 
-    public Evento disiscriviStudente(Long eventoId, Long studenteId) {
+    public EventDetailDTO disiscriviStudente(Long eventoId, Long studenteId) {
         Evento evento = eventoRepository.findById(eventoId)
                 .orElseThrow(() -> new RuntimeException("Evento non trovato"));
         AppUser studente = userRepository.findById(studenteId)
                 .orElseThrow(() -> new RuntimeException("Studente non trovato"));
 
         evento.getIscritti().remove(studente);
-        return eventoRepository.save(evento);
+        Evento salvato = eventoRepository.save(evento);
+        List<UserLiteDto> iscrittiDto = salvato.getIscritti().stream()
+                .map(u -> new UserLiteDto(u.getId(), u.getUsername(), u.getProfileImage()))
+                .toList();
+        boolean userIscritto = false;
+        return EventoMapper.toDetailDTO(salvato, userIscritto, iscrittiDto);
     }
     
     public EventDetailDTO getEventDetails(Long id) {
@@ -147,7 +155,7 @@ public class EventoService {
         if (editorId != null) {
             AppUser editor = userRepository.findById(editorId)
                     .orElseThrow(() -> new RuntimeException("Utente non trovato"));
-            if (editor.getRole() != Ruolo.ADMIN && editor.getRole() != Ruolo.SUPERADMIN) {
+            if (editor.getRole() != Ruolo.ADMIN) {
                 throw new RuntimeException("Solo gli admin possono modificare eventi!");
             }
         }
