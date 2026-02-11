@@ -28,6 +28,9 @@ public class EventoService {
     private AppUserRepository userRepository;
 
     @Autowired
+    private com.florin.franco.UniHub_sistemiWeb.repository.EventLikeRepository eventLikeRepository;
+
+    @Autowired
     private MessageService messageService;
     
     @Autowired
@@ -60,16 +63,25 @@ public class EventoService {
         List<UserLiteDto> iscrittiDto = salvato.getIscritti().stream()
                 .map(u -> new UserLiteDto(u.getId(), u.getUsername(), u.getProfileImage()))
                 .toList();
-        return EventoMapper.toDetailDTO(salvato, false, iscrittiDto);
+        long likeCount = eventLikeRepository.countByEvento(salvato);
+        return EventoMapper.toDetailDTO(salvato, false, iscrittiDto, likeCount, false);
     }
-    public List<EventListDTO> searchEvents(String search, LocalDateTime from, LocalDateTime to) {
+    public List<EventListDTO> searchEvents(String search, LocalDateTime from, LocalDateTime to, Long userId) {
         return eventoRepository.searchEvents(search, from, to)
                 .stream()
-                .map(EventoMapper::toListDTO)
+                .filter(e -> !e.isHidden())
+                .map(e -> toListDTO(e, userId))
                 .toList();
     }
 
-    public List<EventListDTO> getAllEvents(String search, String category, String university, String start, String end) {
+    public List<EventListDTO> getAllEvents(
+            String search,
+            String category,
+            String university,
+            String start,
+            String end,
+            Long userId
+    ) {
         LocalDateTime startDate = parseDate(start);
         LocalDateTime endDate = parseDate(end);
         String searchLower = search == null ? "" : search.trim().toLowerCase();
@@ -85,7 +97,7 @@ public class EventoService {
                 .filter(e -> matchesDateRange(e, startDate, endDate))
                 .toList();
         return listEventsEntity.stream()
-                .map(EventoMapper::toListDTO)
+                .map(e -> toListDTO(e, userId))
                 .toList();
     }
     
@@ -120,7 +132,9 @@ public class EventoService {
                 .toList();
 
         notifySignup(evento, studente);
-        return EventoMapper.toDetailDTO(eventoAggiornato, true, iscrittiDto);
+        long likeCount = eventLikeRepository.countByEvento(eventoAggiornato);
+        boolean userLiked = eventLikeRepository.existsByEventoIdAndUserId(eventoAggiornato.getId(), studenteId);
+        return EventoMapper.toDetailDTO(eventoAggiornato, true, iscrittiDto, likeCount, userLiked);
     }
 
     public EventDetailDTO disiscriviStudente(Long eventoId, Long studenteId) {
@@ -135,17 +149,21 @@ public class EventoService {
                 .map(u -> new UserLiteDto(u.getId(), u.getUsername(), u.getProfileImage()))
                 .toList();
         boolean userIscritto = false;
-        return EventoMapper.toDetailDTO(salvato, userIscritto, iscrittiDto);
+        long likeCount = eventLikeRepository.countByEvento(salvato);
+        boolean userLiked = eventLikeRepository.existsByEventoIdAndUserId(eventoId, studenteId);
+        return EventoMapper.toDetailDTO(salvato, userIscritto, iscrittiDto, likeCount, userLiked);
     }
     
-    public EventDetailDTO getEventDetails(Long id) {
-    	
+    public EventDetailDTO getEventDetails(Long id, Long userId) {
         Evento event = eventoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Evento non trovato"));
         List<UserLiteDto> iscrittiDto = event.getIscritti().stream()
                 .map(u -> new UserLiteDto(u.getId(), u.getUsername(), u.getProfileImage()))
                 .toList();
-        return EventoMapper.toDetailDTO(event, false, iscrittiDto);
+        long likeCount = eventLikeRepository.countByEvento(event);
+        boolean userLiked = userId != null && eventLikeRepository.existsByEventoIdAndUserId(id, userId);
+        boolean userIscritto = userId != null && event.getIscritti().stream().anyMatch(u -> u.getId().equals(userId));
+        return EventoMapper.toDetailDTO(event, userIscritto, iscrittiDto, likeCount, userLiked);
     }
 
     public EventDetailDTO aggiornaEvento(Long eventoId, EventoUpdateDTO dto, Long editorId) {
@@ -202,7 +220,9 @@ public class EventoService {
         List<UserLiteDto> iscrittiDto = salvato.getIscritti().stream()
                 .map(u -> new UserLiteDto(u.getId(), u.getUsername(), u.getProfileImage()))
                 .toList();
-        return EventoMapper.toDetailDTO(salvato, false, iscrittiDto);
+        long likeCount = eventLikeRepository.countByEvento(salvato);
+        boolean userLiked = editorId != null && eventLikeRepository.existsByEventoIdAndUserId(eventoId, editorId);
+        return EventoMapper.toDetailDTO(salvato, false, iscrittiDto, likeCount, userLiked);
     }
 
     public EventDetailDTO getEventoDettaglio(Long eventoId, Long userId) {
@@ -215,14 +235,16 @@ public class EventoService {
                     .anyMatch(u -> u.getId().equals(userId));
         }
 
-        return toDettaglioDTO(evento, userIscritto);
+        return toDettaglioDTO(evento, userIscritto, userId);
     }
 
-    private EventDetailDTO toDettaglioDTO(Evento evento, boolean userIscritto) {
+    private EventDetailDTO toDettaglioDTO(Evento evento, boolean userIscritto, Long userId) {
         List<UserLiteDto> iscrittiDto = evento.getIscritti().stream()
                 .map(u -> new UserLiteDto(u.getId(), u.getUsername(), u.getProfileImage()))
                 .toList();
-        return EventoMapper.toDetailDTO(evento, userIscritto, iscrittiDto);
+        long likeCount = eventLikeRepository.countByEvento(evento);
+        boolean userLiked = userId != null && eventLikeRepository.existsByEventoIdAndUserId(evento.getId(), userId);
+        return EventoMapper.toDetailDTO(evento, userIscritto, iscrittiDto, likeCount, userLiked);
     }
 
     private boolean matchesSearch(Evento evento, String searchLower) {
@@ -252,6 +274,38 @@ public class EventoService {
         if (start != null && dataInizio.isBefore(start)) return false;
         if (end != null && dataInizio.isAfter(end)) return false;
         return true;
+    }
+
+    private EventListDTO toListDTO(Evento evento, Long userId) {
+        long likeCount = eventLikeRepository.countByEvento(evento);
+        boolean userLiked = userId != null && eventLikeRepository.existsByEventoIdAndUserId(evento.getId(), userId);
+        return EventoMapper.toListDTO(evento, likeCount, userLiked);
+    }
+
+    public EventDetailDTO likeEvent(Long eventoId, Long userId) {
+        Evento evento = eventoRepository.findById(eventoId)
+                .orElseThrow(() -> new RuntimeException("Evento non trovato"));
+        AppUser user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+
+        if (!eventLikeRepository.existsByEventoIdAndUserId(eventoId, userId)) {
+            com.florin.franco.UniHub_sistemiWeb.entity.EventLike like = new com.florin.franco.UniHub_sistemiWeb.entity.EventLike();
+            like.setEvento(evento);
+            like.setUser(user);
+            eventLikeRepository.save(like);
+        }
+
+        return getEventDetails(eventoId, userId);
+    }
+
+    public EventDetailDTO unlikeEvent(Long eventoId, Long userId) {
+        eventoRepository.findById(eventoId)
+                .orElseThrow(() -> new RuntimeException("Evento non trovato"));
+        userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+
+        eventLikeRepository.deleteByEventoIdAndUserId(eventoId, userId);
+        return getEventDetails(eventoId, userId);
     }
 
     private LocalDateTime parseDate(String raw) {

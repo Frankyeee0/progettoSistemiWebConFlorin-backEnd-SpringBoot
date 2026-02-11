@@ -26,4 +26,6 @@ public class EventDetailDTO {
     private CreatoreDTO creatore;
     private boolean userIscritto;
     private List<UserLiteDto> iscritti;
+    private long likeCount;
+    private boolean userLiked;
 }

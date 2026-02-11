@@ -12,7 +12,13 @@ import java.util.List;
 public class EventoMapper {
 
     // 🔹 Versione base: senza username (es. dopo creazione evento)
-    public static EventDetailDTO toDetailDTO(Evento e, boolean userIscritto, List<UserLiteDto> iscritti) {
+    public static EventDetailDTO toDetailDTO(
+            Evento e,
+            boolean userIscritto,
+            List<UserLiteDto> iscritti,
+            long likeCount,
+            boolean userLiked
+    ) {
         if (e == null) return null;
 
         return new EventDetailDTO(
@@ -29,11 +35,13 @@ public class EventoMapper {
                 e.getDeadlineIscrizione(),
                 toCreatoreDTO(e.getCreatore()),
                 userIscritto,
-                iscritti
+                iscritti,
+                likeCount,
+                userLiked
         );
     }
 
-    public static EventListDTO toListDTO(Evento e) {
+    public static EventListDTO toListDTO(Evento e, long likeCount, boolean userLiked) {
         if (e == null) return null;
         return new EventListDTO(
                 e.getId(),
@@ -43,7 +51,9 @@ public class EventoMapper {
                 e.getUniversita(),
                 e.getLuogo(),
                 e.getDataInizio(),
-                toCreatoreDTO(e.getCreatore())
+                toCreatoreDTO(e.getCreatore()),
+                likeCount,
+                userLiked
         );
     }
 

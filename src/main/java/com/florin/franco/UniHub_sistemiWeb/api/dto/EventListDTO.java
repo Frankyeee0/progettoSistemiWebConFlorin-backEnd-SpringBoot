@@ -17,4 +17,6 @@ public class EventListDTO {
     private String luogo;
     private LocalDateTime dataInizio;
     private CreatoreDTO creatore;
+    private long likeCount;
+    private boolean userLiked;
 }

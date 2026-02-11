@@ -43,9 +43,10 @@ public class EventoController {
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String university,
             @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) Long userId
     ) {
-        return eventoService.getAllEvents(search, category, university, startDate, endDate);
+        return eventoService.getAllEvents(search, category, university, startDate, endDate, userId);
     }
 
     @GetMapping("/search")
@@ -54,20 +55,36 @@ public class EventoController {
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String university,
             @RequestParam(required = false) String from,
-            @RequestParam(required = false) String to
+            @RequestParam(required = false) String to,
+            @RequestParam(required = false) Long userId
     ) {
-        return ResponseEntity.ok(eventoService.getAllEvents(search, category, university, from, to));
+        return ResponseEntity.ok(eventoService.getAllEvents(search, category, university, from, to, userId));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getEvent(@PathVariable Long id, @RequestParam(required = false) Long userId) {
         try {
-            if (userId != null) {
-                return ResponseEntity.ok(eventoService.getEventoDettaglio(id, userId));
-            }
-            return ResponseEntity.ok(eventoService.getEventDetails(id));
+            return ResponseEntity.ok(eventoService.getEventDetails(id, userId));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body("Attenzione " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/{eventoId}/like")
+    public ResponseEntity<?> like(@PathVariable Long eventoId, @RequestParam Long userId) {
+        try {
+            return ResponseEntity.ok(eventoService.likeEvent(eventoId, userId));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/{eventoId}/unlike")
+    public ResponseEntity<?> unlike(@PathVariable Long eventoId, @RequestParam Long userId) {
+        try {
+            return ResponseEntity.ok(eventoService.unlikeEvent(eventoId, userId));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
