@@ -39,7 +39,7 @@ public class SecurityConfig {
         cfg.setAllowedOrigins(List.of(
                 "http://localhost:5173",
                 "http://localhost:5174",
-                "http://localhost:5182"
+                "http://localhost:5183"
         )); // NON usare "*" se usi credenziali
         cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));
         cfg.setAllowedHeaders(List.of("Authorization","Content-Type","X-Requested-With"));

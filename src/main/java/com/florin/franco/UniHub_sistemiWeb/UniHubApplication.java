@@ -1,6 +1,7 @@
 package com.florin.franco.UniHub_sistemiWeb;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,16 +20,22 @@ import com.florin.franco.UniHub_sistemiWeb.entity.CategoriaEvento;
 import com.florin.franco.UniHub_sistemiWeb.entity.Dipartimento;
 import com.florin.franco.UniHub_sistemiWeb.entity.Evento;
 import com.florin.franco.UniHub_sistemiWeb.entity.Feedback;
+import com.florin.franco.UniHub_sistemiWeb.entity.Materia;
 import com.florin.franco.UniHub_sistemiWeb.entity.Report;
 import com.florin.franco.UniHub_sistemiWeb.entity.Universita;
+import com.florin.franco.UniHub_sistemiWeb.entity.Aula;
+import com.florin.franco.UniHub_sistemiWeb.entity.Lezione;
 import com.florin.franco.UniHub_sistemiWeb.repository.FeedbackRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.AppUserRepository;
+import com.florin.franco.UniHub_sistemiWeb.repository.AulaRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.ClubRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.CategoriaEventoRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.CommentoRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.DipartimentoRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.EventoRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.ReportRepository;
+import com.florin.franco.UniHub_sistemiWeb.repository.MateriaRepository;
+import com.florin.franco.UniHub_sistemiWeb.repository.LezioneRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.UniversitaRepository;
 import com.florin.franco.UniHub_sistemiWeb.utils.Ruolo;
 import com.florin.franco.UniHub_sistemiWeb.utils.ReportStatus;
@@ -55,6 +62,9 @@ public class UniHubApplication {
             CategoriaEventoRepository categoriaRepo,
             FeedbackRepository feedbackRepo,
             ReportRepository reportRepo,
+            MateriaRepository materiaRepo,
+            AulaRepository aulaRepo,
+            LezioneRepository lezioneRepo,
             PasswordEncoder encoder
 	    ) {
 	        return args -> {
@@ -400,6 +410,105 @@ public class UniHubApplication {
 	                reportRepo.saveAll(List.of(r1, r2, r3));
 	                System.out.println("✅ Segnalazioni create.");
 	            }
+
+                // === 📚 MATERIE, AULE, LEZIONI ===
+                if (materiaRepo.count() == 0) {
+                    Materia analisi = new Materia();
+                    analisi.setNome("Analisi 1");
+                    analisi.setCodice("ANL101");
+                    analisi.setCorsoDiStudi("Ingegneria");
+                    analisi.setDipartimento(dipByName.get("Ingegneria"));
+
+                    Materia programmazione = new Materia();
+                    programmazione.setNome("Programmazione 1");
+                    programmazione.setCodice("INF101");
+                    programmazione.setCorsoDiStudi("Informatica");
+                    programmazione.setDipartimento(dipByName.get("Informatica"));
+
+                    Materia economia = new Materia();
+                    economia.setNome("Economia Aziendale");
+                    economia.setCodice("ECO201");
+                    economia.setCorsoDiStudi("Economia");
+                    economia.setDipartimento(dipByName.get("Economia"));
+
+                    materiaRepo.saveAll(List.of(analisi, programmazione, economia));
+                    System.out.println("✅ Materie create.");
+                }
+
+                if (aulaRepo.count() == 0) {
+                    Universita unife = universitaRepo.findAll().stream()
+                            .filter(u -> u.getNome().contains("UNIFE"))
+                            .findFirst()
+                            .orElse(null);
+                    Universita unibo = universitaRepo.findAll().stream()
+                            .filter(u -> u.getNome().contains("UNIBO"))
+                            .findFirst()
+                            .orElse(null);
+
+                    Aula aulaA = new Aula();
+                    aulaA.setNome("Aula A");
+                    aulaA.setEdificio("Blocco Ingegneria");
+                    aulaA.setCapienza(120);
+                    aulaA.setUniversita(unife);
+
+                    Aula lab1 = new Aula();
+                    lab1.setNome("Laboratorio 1");
+                    lab1.setEdificio("Dip. Informatica");
+                    lab1.setCapienza(60);
+                    lab1.setUniversita(unibo);
+
+                    Aula aulaB = new Aula();
+                    aulaB.setNome("Aula B");
+                    aulaB.setEdificio("Blocco Economia");
+                    aulaB.setCapienza(90);
+                    aulaB.setUniversita(unife);
+
+                    aulaRepo.saveAll(List.of(aulaA, lab1, aulaB));
+                    System.out.println("✅ Aule create.");
+                }
+
+                if (lezioneRepo.count() == 0) {
+                    List<Materia> materie = materiaRepo.findAll();
+                    List<Aula> aule = aulaRepo.findAll();
+
+                    Materia analisi = materie.stream().filter(m -> "ANL101".equals(m.getCodice())).findFirst().orElse(null);
+                    Materia programmazione = materie.stream().filter(m -> "INF101".equals(m.getCodice())).findFirst().orElse(null);
+                    Materia economia = materie.stream().filter(m -> "ECO201".equals(m.getCodice())).findFirst().orElse(null);
+
+                    Aula aulaA = aule.stream().filter(a -> "Aula A".equals(a.getNome())).findFirst().orElse(null);
+                    Aula lab1 = aule.stream().filter(a -> "Laboratorio 1".equals(a.getNome())).findFirst().orElse(null);
+                    Aula aulaB = aule.stream().filter(a -> "Aula B".equals(a.getNome())).findFirst().orElse(null);
+
+                    Lezione l1 = new Lezione();
+                    l1.setMateria(analisi);
+                    l1.setAula(aulaA);
+                    l1.setDocente("Prof. Rossi");
+                    l1.setGiornoSettimana("MON");
+                    l1.setOraInizio(LocalTime.of(9, 0));
+                    l1.setOraFine(LocalTime.of(11, 0));
+                    l1.setNote("Lezione introduttiva");
+
+                    Lezione l2 = new Lezione();
+                    l2.setMateria(programmazione);
+                    l2.setAula(lab1);
+                    l2.setDocente("Prof.ssa Bianchi");
+                    l2.setGiornoSettimana("TUE");
+                    l2.setOraInizio(LocalTime.of(10, 0));
+                    l2.setOraFine(LocalTime.of(12, 0));
+                    l2.setNote("Laboratorio base");
+
+                    Lezione l3 = new Lezione();
+                    l3.setMateria(economia);
+                    l3.setAula(aulaB);
+                    l3.setDocente("Prof. Verdi");
+                    l3.setGiornoSettimana("WED");
+                    l3.setOraInizio(LocalTime.of(14, 0));
+                    l3.setOraFine(LocalTime.of(16, 0));
+                    l3.setNote("Modulo 1");
+
+                    lezioneRepo.saveAll(List.of(l1, l2, l3));
+                    System.out.println("✅ Lezioni create.");
+                }
 
 	            System.out.println("\n🎯 Inizializzazione completata con successo ✅");
 	        };

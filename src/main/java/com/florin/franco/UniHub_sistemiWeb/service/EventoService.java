@@ -31,6 +31,9 @@ public class EventoService {
     private com.florin.franco.UniHub_sistemiWeb.repository.EventLikeRepository eventLikeRepository;
 
     @Autowired
+    private com.florin.franco.UniHub_sistemiWeb.repository.EventBookmarkRepository eventBookmarkRepository;
+
+    @Autowired
     private MessageService messageService;
     
     @Autowired
@@ -306,6 +309,39 @@ public class EventoService {
 
         eventLikeRepository.deleteByEventoIdAndUserId(eventoId, userId);
         return getEventDetails(eventoId, userId);
+    }
+
+    public void addBookmark(Long eventoId, Long userId) {
+        Evento evento = eventoRepository.findById(eventoId)
+                .orElseThrow(() -> new RuntimeException("Evento non trovato"));
+        AppUser user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+
+        if (!eventBookmarkRepository.existsByEventoIdAndUserId(eventoId, userId)) {
+            com.florin.franco.UniHub_sistemiWeb.entity.EventBookmark bookmark =
+                    new com.florin.franco.UniHub_sistemiWeb.entity.EventBookmark();
+            bookmark.setEvento(evento);
+            bookmark.setUser(user);
+            eventBookmarkRepository.save(bookmark);
+        }
+    }
+
+    public void removeBookmark(Long eventoId, Long userId) {
+        eventoRepository.findById(eventoId)
+                .orElseThrow(() -> new RuntimeException("Evento non trovato"));
+        userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+        eventBookmarkRepository.deleteByEventoIdAndUserId(eventoId, userId);
+    }
+
+    public List<EventListDTO> getSavedEvents(Long userId) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+
+        return eventBookmarkRepository.findByUserId(userId)
+                .stream()
+                .map(bookmark -> toListDTO(bookmark.getEvento(), userId))
+                .toList();
     }
 
     private LocalDateTime parseDate(String raw) {

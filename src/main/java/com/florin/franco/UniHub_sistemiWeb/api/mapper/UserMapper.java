@@ -48,8 +48,9 @@ public class UserMapper {
             }
         }
 
-        List<EventListDTO> ev = (recent == null || recent.isEmpty()) ? List.of() :
-                recent.stream()
+        List<EventListDTO> ev = (recent == null || recent.isEmpty())
+                ? java.util.Collections.emptyList()
+                : recent.stream()
                         .map(e -> new EventListDTO(
                                 e.getId(),
                                 e.getTitolo(),
@@ -58,7 +59,9 @@ public class UserMapper {
                                 e.getUniversita(),
                                 e.getLuogo(),
                                 e.getDataInizio(),
-                                new CreatoreDTO(u.getId(), u.getUsername())
+                                new CreatoreDTO(u.getId(), u.getUsername()),
+                                0L,
+                                false
                         ))
                         .toList();
 

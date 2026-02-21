@@ -31,6 +31,8 @@ public class PostService {
     @Autowired
     private PostLikeRepository postLikeRepository;
     @Autowired
+    private com.florin.franco.UniHub_sistemiWeb.repository.PostBookmarkRepository postBookmarkRepository;
+    @Autowired
     private AppUserRepository userRepository;
 
     public PostDTO createPost(Long authorId, PostCreateRequest request) {
@@ -96,6 +98,40 @@ public class PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post non trovato"));
         return toDto(post, userId);
+    }
+
+    public void addBookmark(Long postId, Long userId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post non trovato"));
+        AppUser user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+
+        if (!postBookmarkRepository.existsByPostIdAndUserId(postId, userId)) {
+            com.florin.franco.UniHub_sistemiWeb.entity.PostBookmark bookmark =
+                    new com.florin.franco.UniHub_sistemiWeb.entity.PostBookmark();
+            bookmark.setPost(post);
+            bookmark.setUser(user);
+            postBookmarkRepository.save(bookmark);
+        }
+    }
+
+    public void removeBookmark(Long postId, Long userId) {
+        postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post non trovato"));
+        userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+
+        postBookmarkRepository.deleteByPostIdAndUserId(postId, userId);
+    }
+
+    public List<PostDTO> getSavedPosts(Long userId) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+
+        return postBookmarkRepository.findByUserId(userId)
+                .stream()
+                .map(bookmark -> toDto(bookmark.getPost(), userId))
+                .toList();
     }
 
     public PostCommentDTO addComment(Long postId, Long userId, PostCommentRequest request) {
