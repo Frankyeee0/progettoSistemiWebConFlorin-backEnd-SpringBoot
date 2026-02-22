@@ -26,9 +26,9 @@ public class LezioneController {
     public List<LezioneDto> list(
             @RequestParam(required = false) Long materiaId,
             @RequestParam(required = false) Long aulaId,
-            @RequestParam(required = false) String giorno
+            @RequestParam(required = false) java.time.LocalDate data
     ) {
-        return lezioneService.getAll(materiaId, aulaId, giorno);
+        return lezioneService.getAll(materiaId, aulaId, data);
     }
 
     @PostMapping

@@ -2,6 +2,7 @@ package com.florin.franco.UniHub_sistemiWeb;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import com.florin.franco.UniHub_sistemiWeb.entity.Report;
 import com.florin.franco.UniHub_sistemiWeb.entity.Universita;
 import com.florin.franco.UniHub_sistemiWeb.entity.Aula;
 import com.florin.franco.UniHub_sistemiWeb.entity.Lezione;
+import com.florin.franco.UniHub_sistemiWeb.entity.Message;
 import com.florin.franco.UniHub_sistemiWeb.repository.FeedbackRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.AppUserRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.AulaRepository;
@@ -33,9 +35,11 @@ import com.florin.franco.UniHub_sistemiWeb.repository.CategoriaEventoRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.CommentoRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.DipartimentoRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.EventoRepository;
+import com.florin.franco.UniHub_sistemiWeb.repository.MessageRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.ReportRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.MateriaRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.LezioneRepository;
+import com.florin.franco.UniHub_sistemiWeb.repository.PostRepository;
 import com.florin.franco.UniHub_sistemiWeb.repository.UniversitaRepository;
 import com.florin.franco.UniHub_sistemiWeb.utils.Ruolo;
 import com.florin.franco.UniHub_sistemiWeb.utils.ReportStatus;
@@ -65,6 +69,8 @@ public class UniHubApplication {
             MateriaRepository materiaRepo,
             AulaRepository aulaRepo,
             LezioneRepository lezioneRepo,
+            PostRepository postRepo,
+            MessageRepository messageRepo,
             PasswordEncoder encoder
 	    ) {
 	        return args -> {
@@ -483,7 +489,7 @@ public class UniHubApplication {
                     l1.setMateria(analisi);
                     l1.setAula(aulaA);
                     l1.setDocente("Prof. Rossi");
-                    l1.setGiornoSettimana("MON");
+                    l1.setData(LocalDate.now().plusDays(1));
                     l1.setOraInizio(LocalTime.of(9, 0));
                     l1.setOraFine(LocalTime.of(11, 0));
                     l1.setNote("Lezione introduttiva");
@@ -492,7 +498,7 @@ public class UniHubApplication {
                     l2.setMateria(programmazione);
                     l2.setAula(lab1);
                     l2.setDocente("Prof.ssa Bianchi");
-                    l2.setGiornoSettimana("TUE");
+                    l2.setData(LocalDate.now().plusDays(2));
                     l2.setOraInizio(LocalTime.of(10, 0));
                     l2.setOraFine(LocalTime.of(12, 0));
                     l2.setNote("Laboratorio base");
@@ -501,13 +507,83 @@ public class UniHubApplication {
                     l3.setMateria(economia);
                     l3.setAula(aulaB);
                     l3.setDocente("Prof. Verdi");
-                    l3.setGiornoSettimana("WED");
+                    l3.setData(LocalDate.now().plusDays(3));
                     l3.setOraInizio(LocalTime.of(14, 0));
                     l3.setOraFine(LocalTime.of(16, 0));
                     l3.setNote("Modulo 1");
 
                     lezioneRepo.saveAll(List.of(l1, l2, l3));
                     System.out.println("✅ Lezioni create.");
+                } else {
+                    List<Lezione> lezioni = lezioneRepo.findAll();
+                    boolean updatedLessons = false;
+                    int offset = 1;
+                    for (Lezione lezione : lezioni) {
+                        if (lezione.getData() == null) {
+                            lezione.setData(LocalDate.now().plusDays(offset));
+                            offset += 1;
+                            updatedLessons = true;
+                        }
+                    }
+                    if (updatedLessons) {
+                        lezioneRepo.saveAll(lezioni);
+                        System.out.println("✅ Lezioni aggiornate con data.");
+                    }
+                }
+
+                if (postRepo.count() == 0) {
+                    AppUser franciscUser = userRepo.findByUsername("francisc").orElse(null);
+                    AppUser mariaUser = userRepo.findByUsername("maria").orElse(null);
+                    AppUser lucaUser = userRepo.findByUsername("luca").orElse(null);
+
+                    com.florin.franco.UniHub_sistemiWeb.entity.Post p1 = new com.florin.franco.UniHub_sistemiWeb.entity.Post();
+                    p1.setAuthor(franciscUser);
+                    p1.setContent("Prima lezione di Analisi: qualcuno ha gli appunti?");
+
+                    com.florin.franco.UniHub_sistemiWeb.entity.Post p2 = new com.florin.franco.UniHub_sistemiWeb.entity.Post();
+                    p2.setAuthor(mariaUser);
+                    p2.setContent("Cerco compagni per studiare Programmazione 1 questa settimana.");
+
+                    com.florin.franco.UniHub_sistemiWeb.entity.Post p3 = new com.florin.franco.UniHub_sistemiWeb.entity.Post();
+                    p3.setAuthor(lucaUser);
+                    p3.setContent("Qualcuno va al Career Day di UNIFE?");
+
+                    postRepo.saveAll(List.of(p1, p2, p3));
+                    System.out.println("✅ Post seed creati.");
+                }
+
+                if (messageRepo.count() == 0) {
+                    AppUser adminUser = userRepo.findByUsername("admin").orElse(null);
+                    AppUser franciscUser = userRepo.findByUsername("francisc").orElse(null);
+                    AppUser mariaUser = userRepo.findByUsername("maria").orElse(null);
+                    AppUser lucaUser = userRepo.findByUsername("luca").orElse(null);
+
+                    Message m1 = new Message();
+                    m1.setSender(adminUser);
+                    m1.setReceiver(franciscUser);
+                    m1.setContent("Benvenuto su UniHub! Hai già visto i nuovi eventi?");
+                    m1.setStatus(Message.Status.DELIVERED);
+                    m1.setCreatedAt(LocalDateTime.now().minusDays(2));
+                    m1.setUpdatedAt(LocalDateTime.now().minusDays(2));
+
+                    Message m2 = new Message();
+                    m2.setSender(mariaUser);
+                    m2.setReceiver(franciscUser);
+                    m2.setContent("Ci sei per il meetup di matematica?");
+                    m2.setStatus(Message.Status.SENT);
+                    m2.setCreatedAt(LocalDateTime.now().minusDays(1));
+                    m2.setUpdatedAt(LocalDateTime.now().minusDays(1));
+
+                    Message m3 = new Message();
+                    m3.setSender(franciscUser);
+                    m3.setReceiver(lucaUser);
+                    m3.setContent("Hai le slide di Programmazione 1?");
+                    m3.setStatus(Message.Status.READ);
+                    m3.setCreatedAt(LocalDateTime.now().minusHours(6));
+                    m3.setUpdatedAt(LocalDateTime.now().minusHours(2));
+
+                    messageRepo.saveAll(List.of(m1, m2, m3));
+                    System.out.println("✅ Messaggi seed creati.");
                 }
 
 	            System.out.println("\n🎯 Inizializzazione completata con successo ✅");

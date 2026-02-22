@@ -1,5 +1,6 @@
 package com.florin.franco.UniHub_sistemiWeb.repository;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -10,16 +11,16 @@ import com.florin.franco.UniHub_sistemiWeb.entity.Lezione;
 
 @Repository
 public interface LezioneRepository extends JpaRepository<Lezione, Long> {
-    boolean existsByAulaIdAndGiornoSettimanaAndOraInizioLessThanAndOraFineGreaterThan(
+    boolean existsByAulaIdAndDataAndOraInizioLessThanAndOraFineGreaterThan(
             Long aulaId,
-            String giornoSettimana,
+            LocalDate data,
             LocalTime oraFine,
             LocalTime oraInizio
     );
 
-    boolean existsByAulaIdAndGiornoSettimanaAndOraInizioLessThanAndOraFineGreaterThanAndIdNot(
+    boolean existsByAulaIdAndDataAndOraInizioLessThanAndOraFineGreaterThanAndIdNot(
             Long aulaId,
-            String giornoSettimana,
+            LocalDate data,
             LocalTime oraFine,
             LocalTime oraInizio,
             Long id
@@ -29,5 +30,5 @@ public interface LezioneRepository extends JpaRepository<Lezione, Long> {
 
     List<Lezione> findByAulaId(Long aulaId);
 
-    List<Lezione> findByGiornoSettimana(String giornoSettimana);
+    List<Lezione> findByData(LocalDate data);
 }

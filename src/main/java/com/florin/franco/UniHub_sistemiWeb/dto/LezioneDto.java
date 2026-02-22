@@ -1,5 +1,6 @@
 package com.florin.franco.UniHub_sistemiWeb.dto;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class LezioneDto {
@@ -9,7 +10,7 @@ public class LezioneDto {
     private Long aulaId;
     private String aulaNome;
     private String docente;
-    private String giornoSettimana;
+    private LocalDate data;
     private LocalTime oraInizio;
     private LocalTime oraFine;
     private String note;
@@ -62,12 +63,12 @@ public class LezioneDto {
         this.docente = docente;
     }
 
-    public String getGiornoSettimana() {
-        return giornoSettimana;
+    public LocalDate getData() {
+        return data;
     }
 
-    public void setGiornoSettimana(String giornoSettimana) {
-        this.giornoSettimana = giornoSettimana;
+    public void setData(LocalDate data) {
+        this.data = data;
     }
 
     public LocalTime getOraInizio() {

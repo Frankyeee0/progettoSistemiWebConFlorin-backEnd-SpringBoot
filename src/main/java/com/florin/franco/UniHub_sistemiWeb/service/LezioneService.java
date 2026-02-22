@@ -1,5 +1,6 @@
 package com.florin.franco.UniHub_sistemiWeb.service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -26,12 +27,11 @@ public class LezioneService {
     @Autowired
     private AulaRepository aulaRepository;
 
-    public List<LezioneDto> getAll(Long materiaId, Long aulaId, String giornoSettimana) {
+    public List<LezioneDto> getAll(Long materiaId, Long aulaId, LocalDate data) {
         return lezioneRepository.findAll().stream()
                 .filter(lezione -> materiaId == null || lezione.getMateria().getId().equals(materiaId))
                 .filter(lezione -> aulaId == null || lezione.getAula().getId().equals(aulaId))
-                .filter(lezione -> giornoSettimana == null || giornoSettimana.isBlank()
-                        || giornoSettimana.equalsIgnoreCase(lezione.getGiornoSettimana()))
+                .filter(lezione -> data == null || data.equals(lezione.getData()))
                 .map(this::toDto)
                 .toList();
     }
@@ -43,17 +43,17 @@ public class LezioneService {
         Aula aula = aulaRepository.findById(payload.getAulaId())
                 .orElseThrow(() -> new RuntimeException("Aula non trovata"));
 
-        String giorno = normalizeDay(payload.getGiornoSettimana());
+        LocalDate data = payload.getData();
         LocalTime oraInizio = payload.getOraInizio();
         LocalTime oraFine = payload.getOraFine();
         validateTime(oraInizio, oraFine);
-        validateOverlap(null, aula.getId(), giorno, oraInizio, oraFine);
+        validateOverlap(null, aula.getId(), data, oraInizio, oraFine);
 
         Lezione lezione = new Lezione();
         lezione.setMateria(materia);
         lezione.setAula(aula);
         lezione.setDocente(normalize(payload.getDocente()));
-        lezione.setGiornoSettimana(giorno);
+        lezione.setData(data);
         lezione.setOraInizio(oraInizio);
         lezione.setOraFine(oraFine);
         lezione.setNote(normalize(payload.getNote()));
@@ -79,8 +79,8 @@ public class LezioneService {
         if (payload.getDocente() != null) {
             lezione.setDocente(normalize(payload.getDocente()));
         }
-        if (payload.getGiornoSettimana() != null && !payload.getGiornoSettimana().isBlank()) {
-            lezione.setGiornoSettimana(normalizeDay(payload.getGiornoSettimana()));
+        if (payload.getData() != null) {
+            lezione.setData(payload.getData());
         }
         if (payload.getOraInizio() != null) {
             lezione.setOraInizio(payload.getOraInizio());
@@ -96,7 +96,7 @@ public class LezioneService {
         validateOverlap(
                 lezione.getId(),
                 lezione.getAula().getId(),
-                lezione.getGiornoSettimana(),
+                lezione.getData(),
                 lezione.getOraInizio(),
                 lezione.getOraFine()
         );
@@ -119,8 +119,8 @@ public class LezioneService {
         if (payload.getAulaId() == null) {
             throw new RuntimeException("Aula mancante");
         }
-        if (payload.getGiornoSettimana() == null || payload.getGiornoSettimana().trim().isEmpty()) {
-            throw new RuntimeException("Giorno settimana mancante");
+        if (payload.getData() == null) {
+            throw new RuntimeException("Data mancante");
         }
         if (payload.getOraInizio() == null || payload.getOraFine() == null) {
             throw new RuntimeException("Orario mancante");
@@ -133,13 +133,13 @@ public class LezioneService {
         }
     }
 
-    private void validateOverlap(Long lezioneId, Long aulaId, String giorno, LocalTime oraInizio, LocalTime oraFine) {
+    private void validateOverlap(Long lezioneId, Long aulaId, LocalDate data, LocalTime oraInizio, LocalTime oraFine) {
         boolean exists = lezioneId == null
-                ? lezioneRepository.existsByAulaIdAndGiornoSettimanaAndOraInizioLessThanAndOraFineGreaterThan(
-                        aulaId, giorno, oraFine, oraInizio
+                ? lezioneRepository.existsByAulaIdAndDataAndOraInizioLessThanAndOraFineGreaterThan(
+                        aulaId, data, oraFine, oraInizio
                 )
-                : lezioneRepository.existsByAulaIdAndGiornoSettimanaAndOraInizioLessThanAndOraFineGreaterThanAndIdNot(
-                        aulaId, giorno, oraFine, oraInizio, lezioneId
+                : lezioneRepository.existsByAulaIdAndDataAndOraInizioLessThanAndOraFineGreaterThanAndIdNot(
+                        aulaId, data, oraFine, oraInizio, lezioneId
                 );
         if (exists) {
             throw new RuntimeException("Aula già occupata in quell'orario");
@@ -154,7 +154,7 @@ public class LezioneService {
         dto.setAulaId(lezione.getAula().getId());
         dto.setAulaNome(lezione.getAula().getNome());
         dto.setDocente(lezione.getDocente());
-        dto.setGiornoSettimana(lezione.getGiornoSettimana());
+        dto.setData(lezione.getData());
         dto.setOraInizio(lezione.getOraInizio());
         dto.setOraFine(lezione.getOraFine());
         dto.setNote(lezione.getNote());
@@ -167,8 +167,4 @@ public class LezioneService {
         return trimmed.isEmpty() ? null : trimmed;
     }
 
-    private String normalizeDay(String value) {
-        String trimmed = value == null ? "" : value.trim();
-        return trimmed.toUpperCase();
-    }
 }

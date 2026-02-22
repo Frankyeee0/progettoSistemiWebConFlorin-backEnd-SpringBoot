@@ -1,5 +1,6 @@
 package com.florin.franco.UniHub_sistemiWeb.entity;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 import jakarta.persistence.Column;
@@ -31,7 +32,7 @@ public class Lezione {
     private String docente;
 
     @Column(nullable = false)
-    private String giornoSettimana;
+    private LocalDate data;
 
     @Column(nullable = false)
     private LocalTime oraInizio;
@@ -70,12 +71,12 @@ public class Lezione {
         this.docente = docente;
     }
 
-    public String getGiornoSettimana() {
-        return giornoSettimana;
+    public LocalDate getData() {
+        return data;
     }
 
-    public void setGiornoSettimana(String giornoSettimana) {
-        this.giornoSettimana = giornoSettimana;
+    public void setData(LocalDate data) {
+        this.data = data;
     }
 
     public LocalTime getOraInizio() {
